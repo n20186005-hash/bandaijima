@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+import type { Shop } from '../data/shops';
+
+interface Props {
+  shop: Shop;
+  index?: number;
+  featured?: boolean;
+}
+const { shop, index, featured = false } = Astro.props;
+---
+
+<article class:list={['group paper-panel overflow-hidden', featured ? 'md:grid md:grid-cols-[1.05fr_.95fr]' : 'flex h-full flex-col']}>
+  <div class:list={['image-frame', featured ? 'min-h-[320px]' : 'aspect-[4/3]']}>
+    <img src={shop.image} alt={shop.imageAlt} width="1280" height="960" loading="lazy" />
+    <div class="absolute left-0 top-0 z-10 bg-harbor px-4 py-2 text-[0.66rem] font-extrabold tracking-[0.14em] text-white">
+      {shop.categoryLabel}
+    </div>
+    {index !== undefined && <span class="absolute bottom-3 right-4 z-10 font-serif text-5xl text-white/[.75] [text-shadow:0_2px_14px_rgba(0,0,0,.35)]">0{index + 1}</span>}
+  </div>
+  <div class:list={['flex flex-1 flex-col', featured ? 'p-7 md:p-10' : 'p-6']}>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[0.68rem] font-extrabold tracking-[0.12em] text-vermilion">{shop.categoryLabel}</p>
+        <h3 class="mt-2 font-serif text-[1.35rem] font-semibold leading-7 tracking-[0.04em]">{shop.name}</h3>
+      </div>
+      {featured && <span class="stamp shrink-0">港の<br/>一軒</span>}
+    </div>
+    <p class="mt-5 font-serif text-lg leading-8 text-harbor">{shop.lead}</p>
+    <p class="body-copy mt-4 text-sm">{shop.description}</p>
+    <div class="mt-5 flex flex-wrap gap-2">
+      {shop.recommended.map((tag) => <span class="tag">{tag}</span>)}
+    </div>
+    <dl class="mt-6 grid gap-3 border-t border-line pt-5 text-xs">
+      <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold text-ink">予算感</dt><dd class="text-ink-soft">{shop.budgetLabel}</dd></div>
+      <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold text-ink">営業時間</dt><dd class="text-ink-soft">{shop.hours}</dd></div>
+      <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold text-ink">休み</dt><dd class="text-ink-soft">{shop.closed}</dd></div>
+    </dl>
+    {shop.note && <p class="mt-5 flex gap-2 bg-paper-deep/[.70] p-3 text-xs leading-6 text-ink-soft"><Icon name="info" size={17} class="mt-1 shrink-0 text-vermilion" />{shop.note}</p>}
+  </div>
+</article>

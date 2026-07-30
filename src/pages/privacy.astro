@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { siteConfig } from '../config/site';
+---
+
+<BaseLayout title="プライバシーポリシー" description="みなと日和におけるGoogle Analytics 4、Cookie、取得情報、外部通信、免責事項について説明します。" image="/images/niigata-city-night.webp">
+  <PageHero eyebrow="PRIVACY POLICY" title="訪問データの取り扱い。" lead="当サイトはログイン、会員登録、問い合わせフォームを設けず、閲覧状況の把握にGoogle Analytics 4を利用します。" image="/images/niigata-city-night.webp" imageAlt="朱鷺メッセから見た新潟市の夜景" compact />
+  <Breadcrumbs items={[{ label: 'プライバシーポリシー' }]} />
+
+  <section class="section-space">
+    <article class="site-shell-narrow prose-jp">
+      <h2>1. 取得する情報</h2>
+      <p>当サイトでは、ページ閲覧数、参照元、端末種別、おおよその地域、サイト内での操作など、個人を直接特定しない利用状況を取得する場合があります。氏名、メールアドレス、電話番号、決済情報を入力する機能はありません。</p>
+
+      <h2>2. Google Analytics 4</h2>
+      <p>サイト改善と利用状況の把握のため、Google Analytics 4を使用します。Googleのタグが読み込まれる際、Cookieその他の識別技術が利用される場合があります。測定IDは <strong>{siteConfig.gaId}</strong> です。</p>
+
+      <h2>3. Cookie</h2>
+      <p>ブラウザ設定によりCookieを拒否または削除できます。Cookieを無効にしても主要な案内ページは閲覧できますが、アクセス解析の精度が変わる場合があります。</p>
+
+      <h2>4. 外部通信</h2>
+      <p>通常のページ表示では、写真、CSS、JavaScriptをサイト内から配信します。アクセス解析のためGoogle関連ドメインへの通信が発生します。写真クレジットページの原典リンクを利用者が選択した場合は、外部サイトへ移動します。</p>
+
+      <h2>5. データベース・アカウント</h2>
+      <p>当サイトはデータベース、ログイン、会員管理、投稿機能を使用しません。飲食店絞り込みとモデルコース切替の選択内容は、サーバーへ保存せず、閲覧中のブラウザ内だけで処理します。</p>
+
+      <h2>6. 免責事項</h2>
+      <p>掲載情報の正確性と更新に努めますが、営業時間、料金、交通、駐車、商品、設備、天候などの完全性を保証しません。利用者は、当日の運営者・交通事業者・現地スタッフの案内を確認したうえで判断してください。</p>
+
+      <h2>7. 方針の変更</h2>
+      <p>法令、サービス構成、アクセス解析方法の変更に応じて、本方針を更新する場合があります。</p>
+    </article>
+  </section>
+</BaseLayout>

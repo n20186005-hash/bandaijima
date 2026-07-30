@@ -1,0 +1,40 @@
+---
+import Icon from './Icon.astro';
+
+type AccessIcon = 'train' | 'walk' | 'fish' | 'ship';
+const steps: { icon: AccessIcon; title: string; text: string }[] = [
+  { icon: 'train', title: '新潟駅', text: '万代広場側' },
+  { icon: 'walk', title: '万代エリア', text: '街なかを北へ' },
+  { icon: 'fish', title: 'ピアBandai', text: '徒歩約15〜20分' },
+  { icon: 'ship', title: '朱鷺メッセ', text: '港沿いに続く' },
+];
+---
+
+<div class="paper-panel overflow-hidden">
+  <div class="awning-stripe h-2"></div>
+  <div class="p-6 md:p-9">
+    <div class="flex flex-col gap-3 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-[0.66rem] font-extrabold tracking-[0.16em] text-vermilion">WATERFRONT WALK MAP</p>
+        <h3 class="mt-2 font-serif text-2xl font-semibold">新潟駅から万代島へ</h3>
+      </div>
+      <p class="text-xs leading-6 text-ink-soft">縮尺を省いた案内図です</p>
+    </div>
+
+    <div class="relative mt-8 grid gap-4 md:grid-cols-4 md:gap-0">
+      <div class="hidden md:absolute md:left-[12.5%] md:right-[12.5%] md:top-7 md:block md:h-px md:bg-harbor/[.35]"></div>
+      {steps.map(({ icon, title, text }) => (
+        <div class="relative z-10 grid grid-cols-[56px_1fr] items-center gap-4 md:block md:text-center">
+          <span class="mx-auto grid h-14 w-14 place-items-center rounded-full border-2 border-harbor bg-paper text-harbor"><Icon name={icon} size={24} /></span>
+          <div class="md:mt-4"><p class="font-serif text-lg font-semibold">{title}</p><p class="mt-1 text-xs text-ink-soft">{text}</p></div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-9 grid gap-3 border-t border-line pt-6 sm:grid-cols-3">
+      <div class="flex gap-3 bg-paper-deep/[.60] p-4"><Icon name="walk" class="shrink-0 text-vermilion" /><p class="text-xs leading-6"><strong class="block text-ink">徒歩</strong><span class="text-ink-soft">約15〜20分を目安に</span></p></div>
+      <div class="flex gap-3 bg-paper-deep/[.60] p-4"><Icon name="bus" class="shrink-0 text-vermilion" /><p class="text-xs leading-6"><strong class="block text-ink">路線バス</strong><span class="text-ink-soft">「ピアBandai前」が便利</span></p></div>
+      <div class="flex gap-3 bg-paper-deep/[.60] p-4"><Icon name="car" class="shrink-0 text-vermilion" /><p class="text-xs leading-6"><strong class="block text-ink">車</strong><span class="text-ink-soft">週末は早めの到着を</span></p></div>
+    </div>
+  </div>
+</div>

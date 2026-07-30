@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import AccessDiagram from '../components/AccessDiagram.astro';
+import Icon from '../components/Icon.astro';
+import { siteConfig } from '../config/site';
+
+const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3147.3035097658326!2d139.061446!3d37.923339399999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff4ca1fdfbef965%3A0x2d08e3d2cac13c0a!2sMinato%20Marche%20Pier%20Bandai!5e0!3m2!1sja!2sJP!4v1785411169543!5m2!1sja!2sJP';
+---
+
+<BaseLayout
+  title="アクセス・駐車場"
+  description="新潟駅からピアBandaiへの徒歩・バス・車での行き方、万代島周辺の駐車場利用時の確認ポイント、佐渡汽船や空港からの動線を案内します。"
+  image="/images/whats-niigata.webp"
+>
+  <PageHero
+    eyebrow="ACCESS TO BANDAIJIMA"
+    title="駅から、港の市場へ。"
+    lead="新潟駅から徒歩なら約15〜20分。バス、車、佐渡汽船との組み合わせまで、迷いにくい順番で整理しました。"
+    image="/images/whats-niigata.webp"
+    imageAlt="万代島の青空とWhat’s NIIGATAのサイン"
+  />
+  <Breadcrumbs items={[{ label: 'アクセス' }]} />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-center">
+        <div>
+          <SectionTitle eyebrow="FROM NIIGATA STATION" title="旅程に合う、三つの行き方。" description="天候が良ければ街と信濃川を感じる徒歩、荷物が多ければバス、周辺観光まで広げるなら車。帰りの交通を先に決めておくと安心です。" />
+          <dl class="mt-7 grid gap-4 border-y border-line py-6 text-sm">
+            <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">住所</dt><dd class="text-ink-soft">{siteConfig.address}</dd></div>
+            <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">座標</dt><dd class="text-ink-soft">{siteConfig.coordinates.latitude}, {siteConfig.coordinates.longitude}</dd></div>
+            <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">目印</dt><dd class="text-ink-soft">万代島・朱鷺メッセ方面</dd></div>
+          </dl>
+        </div>
+        <AccessDiagram />
+      </div>
+
+      <div class="mt-14 border-t border-line pt-12">
+        <SectionTitle eyebrow="LOCATION MAP" title="ピアBandaiの場所を、地図で確認。" description="新潟駅や朱鷺メッセとの位置関係を確認してから、旅程に合う移動方法を選びましょう。" />
+        <div class="paper-panel mt-8 overflow-hidden">
+          <iframe
+            src={MAP_EMBED_URL}
+            width="600"
+            height="450"
+            class="h-[360px] w-full md:h-[520px]"
+            style="border:0;"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            title="みなとのマルシェ ピアBandaiのGoogleマップ"
+          ></iframe>
+        </div>
+      </div>
+
+      <div class="mt-14 grid gap-5 lg:grid-cols-3">
+        <article class="paper-panel overflow-hidden">
+          <div class="flex items-center gap-4 bg-harbor p-6 text-white"><span class="grid h-12 w-12 place-items-center border border-white/[.35]"><Icon name="walk" size={25} /></span><div><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.58]">ON FOOT</p><h2 class="mt-1 font-serif text-xl font-semibold">徒歩 約15〜20分</h2></div></div>
+          <div class="p-6"><ol class="grid gap-4 text-xs leading-6 text-ink-soft"><li><strong class="block text-ink">1. 新潟駅の万代広場側へ</strong>駅を出たら万代・信濃川方面へ進みます。</li><li><strong class="block text-ink">2. 万代エリアを北へ</strong>街なかを抜け、港側へ。荷物が多い日は無理をしません。</li><li><strong class="block text-ink">3. 万代島の市場エリアへ</strong>朱鷺メッセの高層棟が方向の目印になります。</li></ol><p class="notice-box mt-5 text-xs leading-6 text-ink-soft">雨、雪、路面凍結、夏の暑さでは所要時間が延びます。</p></div>
+        </article>
+
+        <article class="paper-panel overflow-hidden">
+          <div class="flex items-center gap-4 bg-awning p-6 text-white"><span class="grid h-12 w-12 place-items-center border border-white/[.35]"><Icon name="bus" size={25} /></span><div><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.58]">BY BUS</p><h2 class="mt-1 font-serif text-xl font-semibold">「ピアBandai前」へ</h2></div></div>
+          <div class="p-6"><p class="body-copy text-xs">新潟駅バスターミナルの朱鷺メッセ・佐渡汽船方面の路線が便利です。17番乗り場の案内を目安に、当日の行先表示を確認してください。</p><dl class="mt-5 grid gap-3 border-t border-line pt-5 text-xs"><div><dt class="font-extrabold text-ink">降車</dt><dd class="mt-1 text-ink-soft">「ピアBandai前」が分かりやすい</dd></div><div><dt class="font-extrabold text-ink">別案</dt><dd class="mt-1 text-ink-soft">「宮浦中学前」を利用する路線もあります</dd></div><div><dt class="font-extrabold text-ink">確認</dt><dd class="mt-1 text-ink-soft">乗り場、時刻、運賃は変更される場合があります</dd></div></dl></div>
+        </article>
+
+        <article class="paper-panel overflow-hidden">
+          <div class="flex items-center gap-4 bg-vermilion p-6 text-white"><span class="grid h-12 w-12 place-items-center border border-white/[.35]"><Icon name="car" size={25} /></span><div><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.65]">BY CAR</p><h2 class="mt-1 font-serif text-xl font-semibold">週末は早めに</h2></div></div>
+          <div class="p-6"><p class="body-copy text-xs">敷地内駐車場が混雑する日は、万代島・朱鷺メッセ周辺の案内に従います。駐車サービスの利用方法は現地で必ず確認してください。</p><ul class="mt-5 grid gap-3 text-xs leading-6 text-ink-soft"><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />入庫時に駐車場名と区画を確認</li><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />サービス用QRやレシートを保管</li><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />出庫前に館内の事前精算案内を確認</li></ul></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-harbor text-white py-16 md:py-24">
+    <div class="site-shell grid gap-10 lg:grid-cols-[.86fr_1.14fr] lg:items-center">
+      <div>
+        <p class="text-[0.7rem] font-extrabold tracking-[0.22em] text-white/[.55]">PARKING CHECKLIST</p>
+        <h2 class="mt-4 font-serif text-3xl font-semibold leading-[1.4] md:text-4xl">駐車は「入る」より、<br />「出る」までを確認。</h2>
+        <p class="mt-6 text-sm leading-8 text-white/[.70]">料金体系やサービス条件は変わることがあります。古い案内だけで判断せず、入庫後に現地表示を撮影しておくと精算時に迷いません。</p>
+      </div>
+      <div class="grid gap-px bg-white/[.14] sm:grid-cols-2">
+        {[
+          ['01', '入庫時', '駐車場名、料金表示、営業時間を確認。'],
+          ['02', '買い物中', 'レシート、サービスQR、駐車券をまとめて保管。'],
+          ['03', '出庫前', '館内の事前精算機・サービス手続きを確認。'],
+          ['04', '混雑時', '係員と標識に従い、周辺駐車場へ切り替える。'],
+        ].map(([number, title, text]) => (
+          <article class="bg-harbor p-6"><p class="font-serif text-3xl text-white/[.25]">{number}</p><h3 class="mt-4 font-serif text-xl font-semibold">{title}</h3><p class="mt-3 text-xs leading-6 text-white/[.65]">{text}</p></article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle eyebrow="CONNECTIONS" title="港の次へ、つなげる。" description="ピアBandaiは、朱鷺メッセ、佐渡汽船、萬代橋を組み合わせやすい位置にあります。乗船や空港移動がある日は、食事より交通の締切を優先します。" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        <article class="paper-panel p-7"><Icon name="ship" size={30} class="text-vermilion" /><h2 class="mt-5 font-serif text-xl font-semibold">佐渡汽船</h2><p class="body-copy mt-4 text-sm">乗船前は提供が早い食事を選び、保冷品は最後に。繁忙期は手続きと館内移動に余裕を持ちます。</p><a href="/course/#ferry" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor">乗船前コース <Icon name="arrow" size={16} /></a></article>
+        <article class="paper-panel p-7"><Icon name="camera" size={30} class="text-vermilion" /><h2 class="mt-5 font-serif text-xl font-semibold">朱鷺メッセ</h2><p class="body-copy mt-4 text-sm">市場のあとに港沿いを歩き、展望へ。天候が良い日は新潟市街や日本海の眺めを楽しめます。</p><a href="/course/#half" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor">半日コース <Icon name="arrow" size={16} /></a></article>
+        <article class="paper-panel p-7"><Icon name="train" size={30} class="text-vermilion" /><h2 class="mt-5 font-serif text-xl font-semibold">新潟空港・駅</h2><p class="body-copy mt-4 text-sm">空港からは新潟駅を経由するか、荷物量に応じてタクシーを選択。帰路は渋滞と乗換時間を見込みます。</p><a href="/faq/" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor">移動のFAQ <Icon name="arrow" size={16} /></a></article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

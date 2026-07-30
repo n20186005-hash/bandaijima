@@ -1,0 +1,147 @@
+---
+import Icon from './Icon.astro';
+import { shops } from '../data/shops';
+
+const budgetRank = { under1500: 1, under2500: 2, over2500: 3 } as const;
+const timeRank = { quick: 1, normal: 2, relaxed: 3 } as const;
+---
+
+<section class="paper-panel overflow-hidden" data-food-finder>
+  <div class="awning-stripe h-2"></div>
+  <div class="grid gap-8 p-6 md:p-9 lg:grid-cols-[.78fr_1.22fr] lg:gap-12">
+    <div>
+      <p class="eyebrow">FOOD FINDER</p>
+      <h3 class="mt-4 font-serif text-3xl font-semibold leading-[1.4]">今日の一軒を<br class="hidden lg:block" />3つの条件で。</h3>
+      <p class="body-copy mt-5 text-sm">予算、使える時間、生ものの好みから候補を絞ります。店の営業状況や待ち時間は、到着後に案内表示で確認してください。</p>
+
+      <form class="mt-7 grid gap-5" data-finder-form>
+        <label class="grid gap-2 text-xs font-extrabold tracking-[0.08em] text-ink">
+          予算の上限
+          <select name="budget" class="min-h-12 w-full border border-line bg-white px-4 text-sm font-bold text-harbor">
+            <option value="all">気にしない</option>
+            <option value="under1500">1,500円以内を目安</option>
+            <option value="under2500">2,500円以内を目安</option>
+            <option value="over2500">ゆっくり、しっかり楽しむ</option>
+          </select>
+        </label>
+
+        <label class="grid gap-2 text-xs font-extrabold tracking-[0.08em] text-ink">
+          食事に使える時間
+          <select name="time" class="min-h-12 w-full border border-line bg-white px-4 text-sm font-bold text-harbor">
+            <option value="all">気にしない</option>
+            <option value="quick">30分ほど</option>
+            <option value="normal">60分ほど</option>
+            <option value="relaxed">待ち時間も含めてゆっくり</option>
+          </select>
+        </label>
+
+        <fieldset class="grid gap-2">
+          <legend class="text-xs font-extrabold tracking-[0.08em] text-ink">食べ方・同行者</legend>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex min-h-11 items-center gap-2 border border-line bg-white/[.60] px-3 text-xs font-bold"><input type="checkbox" name="noRaw" class="accent-vermilion" /> 生ものなし</label>
+            <label class="flex min-h-11 items-center gap-2 border border-line bg-white/[.60] px-3 text-xs font-bold"><input type="checkbox" name="solo" class="accent-vermilion" /> 一人で入りやすい</label>
+            <label class="flex min-h-11 items-center gap-2 border border-line bg-white/[.60] px-3 text-xs font-bold"><input type="checkbox" name="kids" class="accent-vermilion" /> 子どもと一緒</label>
+            <label class="flex min-h-11 items-center gap-2 border border-line bg-white/[.60] px-3 text-xs font-bold"><input type="checkbox" name="quick" class="accent-vermilion" /> 提供の早さ重視</label>
+          </div>
+        </fieldset>
+
+        <button type="reset" class="button-quiet justify-self-start" data-finder-reset>条件をもどす</button>
+      </form>
+    </div>
+
+    <div class="border-t border-line pt-7 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+      <div class="flex items-end justify-between gap-4 border-b border-line pb-4">
+        <div>
+          <p class="text-[0.66rem] font-extrabold tracking-[0.16em] text-vermilion">RECOMMENDATIONS</p>
+          <h4 class="mt-2 font-serif text-2xl font-semibold">おすすめ候補</h4>
+        </div>
+        <p class="text-xs font-bold text-ink-soft" aria-live="polite" data-result-count>{shops.length}件</p>
+      </div>
+
+      <div class="mt-5 grid gap-3" data-results>
+        {shops.map((shop) => (
+          <article
+            class="group grid grid-cols-[84px_1fr] gap-4 border border-line bg-white/[.72] p-3 transition hover:-translate-y-0.5 hover:border-harbor"
+            data-shop-card
+            data-budget={budgetRank[shop.budget]}
+            data-time={timeRank[shop.stayTime]}
+            data-raw={String(shop.rawFish)}
+            data-solo={String(shop.solo)}
+            data-kids={String(shop.kids)}
+            data-quick={String(shop.quick)}
+          >
+            <div class="image-frame aspect-square">
+              <img src={shop.image} alt="" width="168" height="168" loading="lazy" />
+            </div>
+            <div class="min-w-0 py-1">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-[0.62rem] font-extrabold tracking-[0.11em] text-vermilion">{shop.categoryLabel}</p>
+                  <h5 class="mt-1 truncate font-serif text-base font-semibold">{shop.name}</h5>
+                </div>
+                <Icon name="arrow" size={16} class="mt-1 shrink-0 text-harbor opacity-40 transition group-hover:translate-x-1 group-hover:opacity-100" />
+              </div>
+              <p class="mt-2 line-clamp-2 text-xs leading-5 text-ink-soft">{shop.lead}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="notice-box mt-5 hidden" data-no-results>
+        <p class="text-sm font-bold">条件に合う候補がありません。</p>
+        <p class="mt-1 text-xs leading-6 text-ink-soft">予算または時間を広げて、もう一度選んでください。</p>
+      </div>
+      <p class="mt-5 flex gap-2 text-xs leading-6 text-ink-soft"><Icon name="info" size={17} class="mt-1 shrink-0 text-vermilion" />この機能は旅行計画用の目安です。予約、空席、当日の提供状況を保証するものではありません。</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initFoodFinders = () => {
+    document.querySelectorAll<HTMLElement>('[data-food-finder]').forEach((finder) => {
+      if (finder.dataset.ready === 'true') return;
+      finder.dataset.ready = 'true';
+
+      const form = finder.querySelector<HTMLFormElement>('[data-finder-form]');
+      const cards = Array.from(finder.querySelectorAll<HTMLElement>('[data-shop-card]'));
+      const count = finder.querySelector<HTMLElement>('[data-result-count]');
+      const noResults = finder.querySelector<HTMLElement>('[data-no-results]');
+      if (!form) return;
+
+      const apply = () => {
+        const data = new FormData(form);
+        const budget = String(data.get('budget') ?? 'all');
+        const time = String(data.get('time') ?? 'all');
+        const budgetLimit = budget === 'all' ? 99 : Number({ under1500: 1, under2500: 2, over2500: 3 }[budget as 'under1500' | 'under2500' | 'over2500']);
+        const timeLimit = time === 'all' ? 99 : Number({ quick: 1, normal: 2, relaxed: 3 }[time as 'quick' | 'normal' | 'relaxed']);
+        const requireNoRaw = data.has('noRaw');
+        const requireSolo = data.has('solo');
+        const requireKids = data.has('kids');
+        const requireQuick = data.has('quick');
+
+        let visible = 0;
+        cards.forEach((card) => {
+          const matches =
+            Number(card.dataset.budget) <= budgetLimit &&
+            Number(card.dataset.time) <= timeLimit &&
+            (!requireNoRaw || card.dataset.raw === 'false') &&
+            (!requireSolo || card.dataset.solo === 'true') &&
+            (!requireKids || card.dataset.kids === 'true') &&
+            (!requireQuick || card.dataset.quick === 'true');
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        });
+
+        if (count) count.textContent = `${visible}件`;
+        noResults?.classList.toggle('hidden', visible !== 0);
+      };
+
+      form.addEventListener('change', apply);
+      form.addEventListener('reset', () => requestAnimationFrame(apply));
+      apply();
+    });
+  };
+
+  initFoodFinders();
+  document.addEventListener('astro:page-load', initFoodFinders);
+</script>

@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<BaseLayout title="ページが見つかりません" description="お探しのページは移動または削除された可能性があります。" image="/images/niigata-city-night.webp" noindex>
+  <section class="relative grid min-h-[72vh] place-items-center overflow-hidden bg-harbor px-5 py-20 text-white">
+    <div class="absolute inset-0"><img src="/images/niigata-city-night.webp" alt="朱鷺メッセから見た新潟市の夜景" width="1280" height="960" class="h-full w-full object-cover" /><div class="absolute inset-0 bg-harbor/[.82]"></div></div>
+    <div class="relative z-10 max-w-2xl text-center"><p class="font-serif text-[clamp(5rem,16vw,11rem)] leading-none text-white/[.18]">404</p><p class="mt-5 text-[0.7rem] font-extrabold tracking-[0.22em] text-white/[.55]">LOST AT THE PORT</p><h1 class="mt-5 font-serif text-3xl font-semibold md:text-5xl">この航路は、見つかりませんでした。</h1><p class="mx-auto mt-6 max-w-lg text-sm leading-8 text-white/[.72]">URLが変わったか、ページが移動した可能性があります。港の入口から、もう一度お進みください。</p><a href="/" class="button-secondary mt-9">ホームへ戻る <Icon name="arrow" size={17} /></a></div>
+  </section>
+</BaseLayout>

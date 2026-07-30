@@ -1,0 +1,22 @@
+---
+interface Item {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<nav aria-label="パンくず" class="border-b border-line bg-white/[.45]">
+  <ol class="site-shell flex min-h-12 items-center gap-2 overflow-x-auto py-2 text-[0.72rem] font-bold tracking-[0.06em] text-ink-soft">
+    <li><a href="/" class="transition-colors hover:text-vermilion">ホーム</a></li>
+    {items.map((item) => (
+      <li class="flex items-center gap-2 whitespace-nowrap">
+        <span aria-hidden="true" class="text-line">／</span>
+        {item.href ? <a href={item.href} class="transition-colors hover:text-vermilion">{item.label}</a> : <span aria-current="page">{item.label}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>

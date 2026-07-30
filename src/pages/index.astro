@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import ShopCard from '../components/ShopCard.astro';
+import FoodFinder from '../components/FoodFinder.astro';
+import AccessDiagram from '../components/AccessDiagram.astro';
+import { shops } from '../data/shops';
+---
+
+<BaseLayout>
+  <section class="relative min-h-[760px] overflow-hidden bg-harbor text-white md:min-h-[820px]">
+    <div class="absolute inset-0">
+      <img
+        src="/images/pia-bandai-hero.webp"
+        alt="新潟市万代島にある、みなとのマルシェ ピアBandaiの外観"
+        width="1280"
+        height="851"
+        class="h-full w-full object-cover object-center"
+        fetchpriority="high"
+      />
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,31,41,.94)_0%,rgba(7,31,41,.72)_44%,rgba(7,31,41,.20)_78%,rgba(7,31,41,.10)_100%)]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,31,41,.72)_0%,transparent_52%)]"></div>
+    </div>
+
+    <div class="site-shell relative z-10 flex min-h-[760px] items-center py-20 md:min-h-[820px]">
+      <div class="max-w-4xl pt-8">
+        <div class="flex items-center gap-4">
+          <span class="stamp border-white text-white">新潟<br/>港町</span>
+          <p class="text-[0.7rem] font-extrabold tracking-[0.26em] text-white/[.72]">MINATO MARCHE · BANDAIJIMA</p>
+        </div>
+        <h1 class="mt-8 max-w-[850px] font-serif text-[clamp(3rem,8vw,7.2rem)] font-semibold leading-[1.08] tracking-[0.04em]">
+          新潟のうんめぇが、<br />港に集まる。
+        </h1>
+        <p class="mt-8 max-w-2xl text-[0.98rem] leading-9 text-white/[.82] md:text-lg">
+          日本海の魚、佐渡の寿司、新潟米と地酒。<br class="hidden sm:block" />ピアBandaiを迷わず楽しむための、旅人目線の食と港の手帖です。
+        </p>
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+          <a href="/gourmet/" class="button-primary bg-vermilion hover:bg-[#aa3a27]">食べるものを選ぶ <Icon name="arrow" size={17} /></a>
+          <a href="/hours/" class="button-secondary">営業時間を見る <Icon name="clock" size={17} /></a>
+          <a href="/access/" class="button-secondary">行き方を見る <Icon name="map" size={17} /></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 z-10 border-t border-white/[.18] bg-harbor/[.82] backdrop-blur-md">
+      <div class="site-shell grid grid-cols-2 divide-x divide-white/[.13] md:grid-cols-4">
+        <div class="px-4 py-5 md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">PLACE</p><p class="mt-1 font-serif text-lg">新潟・万代島</p></div>
+        <div class="px-4 py-5 md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">FROM STATION</p><p class="mt-1 font-serif text-lg">徒歩 約15〜20分</p></div>
+        <div class="hidden px-4 py-5 md:block md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">BEST FOR</p><p class="mt-1 font-serif text-lg">海鮮・市場・港散歩</p></div>
+        <div class="hidden px-4 py-5 md:block md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">GUIDE STATUS</p><p class="mt-1 font-serif text-lg">非公式・随時更新</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-10 lg:grid-cols-[.78fr_1.22fr] lg:items-end">
+        <SectionTitle
+          eyebrow="FIRST VISIT"
+          title="はじめてなら、まずこの三軒。"
+          description="人気の寿司、魚屋の海鮮料理、そして生ものを避けたい人にも選びやすい新潟米の丼。同行者と待ち時間に合わせて選びます。"
+        />
+        <div class="flex items-end justify-between gap-6 border-b border-line pb-4 lg:justify-end">
+          <p class="hidden max-w-sm text-xs leading-6 text-ink-soft sm:block">昼どきは最初に待ち時間を確認。長ければ別の店へ切り替え、買い物を先にするのが港時間のコツです。</p>
+          <a href="/gourmet/" class="button-quiet shrink-0">全店を見る <Icon name="arrow" size={16} /></a>
+        </div>
+      </div>
+
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        <ShopCard shop={shops[0]} index={0} />
+        <ShopCard shop={shops[2]} index={1} />
+        <ShopCard shop={shops[4]} index={2} />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-harbor-light/[.45] py-16 md:py-24">
+    <div class="site-shell">
+      <FoodFinder />
+    </div>
+  </section>
+
+  <section class="section-space overflow-hidden">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="MARKET BASKET"
+        title="食べたあとは、新潟を持ち帰る。"
+        description="鮮魚、新潟米、地酒、農産物。保冷が必要なものは最後に選び、移動時間と持ち運び方まで店頭で確認します。"
+      />
+
+      <div class="mt-12 grid gap-5 md:grid-cols-12 md:grid-rows-[250px_250px]">
+        <a href="/shopping/#seafood" class="group image-frame min-h-[320px] md:col-span-7 md:row-span-2">
+          <img src="/images/seafood-market.webp" alt="新潟県内の魚市場に並ぶ海産物" width="1280" height="855" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.82] via-transparent to-transparent"></div>
+          <div class="absolute inset-x-0 bottom-0 z-10 p-7 text-white md:p-9">
+            <p class="text-[0.65rem] font-extrabold tracking-[0.18em] text-white/[.65]">01 · SEAFOOD</p>
+            <h3 class="mt-2 font-serif text-3xl font-semibold">鮮魚と海産物</h3>
+            <p class="mt-3 max-w-lg text-sm leading-7 text-white/[.76]">旅先で食べる分、家で楽しむ分。保冷時間を基準に選びます。</p>
+          </div>
+        </a>
+        <a href="/shopping/#rice" class="group image-frame min-h-[250px] md:col-span-5">
+          <img src="/images/niigata-rice.webp" alt="新潟県十日町市の水田" width="1280" height="720" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.78] via-transparent to-transparent"></div>
+          <div class="absolute inset-x-0 bottom-0 z-10 p-6 text-white"><p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-white/[.65]">02 · RICE</p><h3 class="mt-2 font-serif text-2xl font-semibold">新潟米と農産物</h3></div>
+        </a>
+        <a href="/shopping/#sake" class="group image-frame min-h-[250px] md:col-span-5">
+          <img src="/images/niigata-sake.webp" alt="新潟の日本酒イベント会場に並ぶ酒樽" width="1280" height="960" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.80] via-transparent to-transparent"></div>
+          <div class="absolute inset-x-0 bottom-0 z-10 p-6 text-white"><p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-white/[.65]">03 · SAKE</p><h3 class="mt-2 font-serif text-2xl font-semibold">地酒と常温の土産</h3></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white/[.45] py-16 md:py-24">
+    <div class="site-shell grid gap-10 lg:grid-cols-[.72fr_1.28fr] lg:items-center">
+      <div>
+        <SectionTitle
+          eyebrow="ACCESS"
+          title="駅から港へ。迷わない順番。"
+          description="歩く、バスに乗る、車で向かう。旅程に合う移動手段を選び、週末は駐車と食事の混雑を早めに見込みます。"
+        />
+        <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <a href="/access/" class="button-primary">アクセス・駐車場 <Icon name="arrow" size={17} /></a>
+          <a href="/course/" class="button-quiet">滞在時間からコースを選ぶ <Icon name="arrow" size={17} /></a>
+        </div>
+      </div>
+      <AccessDiagram />
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-8 lg:grid-cols-2 lg:items-center">
+        <div class="relative">
+          <div class="image-frame aspect-[4/3] lg:mr-14"><img src="/images/bandai-bridge.webp" alt="信濃川に架かる萬代橋" width="1280" height="720" loading="lazy" /></div>
+          <div class="image-frame -mt-16 ml-auto aspect-[4/3] w-[58%] border-[10px] border-paper lg:absolute lg:-bottom-12 lg:right-0 lg:mt-0"><img src="/images/toki-messe.webp" alt="万代島に立つ朱鷺メッセ" width="960" height="1715" loading="lazy" /></div>
+        </div>
+        <div class="pt-4 lg:pl-10">
+          <p class="eyebrow">HALF-DAY WALK</p>
+          <h2 class="section-title mt-4">市場だけで終わらない、<br />万代島の半日。</h2>
+          <p class="body-copy mt-6">萬代橋から信濃川を眺め、ピアBandaiで昼食と買い物。港沿いを朱鷺メッセへ歩けば、街と海の距離が近い新潟らしさが一つの流れになります。</p>
+          <dl class="mt-8 grid gap-4 border-y border-line py-6 text-sm sm:grid-cols-3">
+            <div><dt class="text-[0.65rem] font-extrabold tracking-[0.12em] text-vermilion">START</dt><dd class="mt-2 font-serif text-lg">萬代橋</dd></div>
+            <div><dt class="text-[0.65rem] font-extrabold tracking-[0.12em] text-vermilion">MAIN</dt><dd class="mt-2 font-serif text-lg">市場ランチ</dd></div>
+            <div><dt class="text-[0.65rem] font-extrabold tracking-[0.12em] text-vermilion">FINISH</dt><dd class="mt-2 font-serif text-lg">港の展望</dd></div>
+          </dl>
+          <a href="/course/" class="button-primary mt-8">モデルコースを見る <Icon name="arrow" size={17} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-paper-deep/[.72] py-12">
+    <div class="site-shell flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+      <div class="flex gap-4">
+        <Icon name="info" size={25} class="mt-1 shrink-0 text-vermilion" />
+        <div><h2 class="font-serif text-xl font-semibold">出発前に、当日の表示をもう一度。</h2><p class="mt-2 text-xs leading-6 text-ink-soft">営業時間、休業、売り切れ、駐車サービスは変更される場合があります。現地掲示を優先してください。</p></div>
+      </div>
+      <a href="/hours/" class="button-quiet shrink-0">確認ポイントを見る <Icon name="arrow" size={16} /></a>
+    </div>
+  </section>
+</BaseLayout>

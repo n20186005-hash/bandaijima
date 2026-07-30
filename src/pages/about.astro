@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<BaseLayout title="このサイトについて" description="みなと日和の編集方針、非公式ガイドとしての立場、情報更新、写真利用、サイト技術について案内します。" image="/images/pia-bandai-hero.webp">
+  <PageHero eyebrow="ABOUT THIS GUIDE" title="港の時間を、選びやすく。" lead="みなと日和は、ピアBandaiと万代島を訪れる人の「何を食べる、どう行く、どれくらい過ごす」を整理する非公式ガイドです。" image="/images/pia-bandai-hero.webp" imageAlt="みなとのマルシェ ピアBandaiの外観" compact />
+  <Breadcrumbs items={[{ label: 'このサイトについて' }]} />
+
+  <section class="section-space">
+    <div class="site-shell grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
+      <div class="lg:sticky lg:top-28"><SectionTitle eyebrow="EDITORIAL NOTE" title="公式情報を写すのではなく、旅の判断に並べ替える。" description="施設の一覧だけでは決めにくい、待ち時間、同行者、生ものの好み、移動時刻、持ち帰り条件を中心に編集しています。" /></div>
+      <div class="prose-jp">
+        <h2>非公式ガイドです</h2>
+        <p>当サイトは、みなとのマルシェ ピアBandai、各店舗、新潟市、交通事業者などが運営する公式サイトではありません。予約、空席照会、問い合わせの取次ぎ、商品販売は行いません。</p>
+
+        <h2>情報の更新方針</h2>
+        <p>営業時間、定休日、料金、駐車サービス、バス時刻、取扱商品は変わりやすい情報です。旅行計画に必要な骨格は掲載しますが、当日の現地掲示と運営者の最新案内を優先するよう、各ページで注意を示しています。</p>
+        <p>更新時は、古い数字を残すのではなく、情報の性質に応じて「目安」「当日確認」と表現を分けます。</p>
+
+        <h2>写真について</h2>
+        <p>写真は、現地と新潟の食文化を伝える実在の写真をサイト内へ保存し、表示時に外部画像サーバーへ依存しない構成にしています。撮影者、ライセンス、原典は写真クレジットページにまとめています。</p>
+        <p><a href="/credits/" class="inline-flex items-center gap-2 font-bold text-harbor underline decoration-line underline-offset-4">写真クレジットを見る <Icon name="arrow" size={16} /></a></p>
+
+        <h2>サイトの仕組み</h2>
+        <p>Astro、TypeScript、Tailwind CSSで構築した静的サイトです。データベース、ログイン、CMS、予約機能はありません。飲食店絞り込みとモデルコース切替は、ページ内のデータだけを使ってブラウザ上で処理します。</p>
+
+        <h2>サイト名とドメイン</h2>
+        <p>画面上では「みなと日和」という編集名を使用します。公開先のURLは設定ファイルまたは環境変数で管理し、ページ本文には表示しません。ドメイン変更時も、本文を書き換えずにcanonical、OG、サイトマップを更新できます。</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import Icon from '../components/Icon.astro';
+
+const faqs = [
+  { category: '基本', question: 'このサイトはピアBandaiの公式サイトですか？', answer: 'いいえ。旅行者が食事、買い物、交通を組み立てるための非公式ガイドです。営業時間、休業、料金、駐車サービスなどは変更されるため、現地掲示と施設・店舗からの最新案内を優先してください。' },
+  { category: '時間', question: '営業時間は何時から何時までですか？', answer: '施設全体では朝から夜までの時間帯が案内されていますが、鮮魚店、飲食店、カフェで営業時間と定休日が異なります。特にラストオーダー、季節営業、臨時休業、売り切れによる早仕舞いに注意してください。' },
+  { category: 'アクセス', question: '新潟駅から歩けますか？', answer: '歩けます。万代広場側からおおむね15〜20分が目安です。雨、雪、路面凍結、夏の暑さ、荷物の量によってはバスやタクシーを選ぶと安心です。' },
+  { category: '駐車場', question: '駐車場はありますか？', answer: '敷地内と万代島周辺に駐車の選択肢があります。週末や催事日は混雑しやすいため、現地の誘導に従ってください。サービスQR、駐車券、買い物レシート、事前精算の手順は入庫後に確認するのがおすすめです。' },
+  { category: '家族', question: '子ども連れでも利用しやすいですか？', answer: '複数の飲食候補と休憩場所があり、家族でも組み立てやすい場所です。混雑時は待ち時間が長くなるため、寿司だけでなく丼、ラーメン、肉料理など代案を決めておくと動きやすくなります。' },
+  { category: '天候', question: '雨の日でも楽しめますか？', answer: '屋内の売り場や飲食店を中心に楽しめます。ただし建物間の移動や駐車場からの移動で屋外を通る場合があります。傘と滑りにくい靴を用意し、港沿いの散歩は天候に合わせて短くします。' },
+  { category: 'ペット', question: 'ペットと一緒に行けますか？', answer: '屋外の利用可能エリアが案内されることがありますが、飲食店や売り場ごとに条件が異なります。リード、カート、同伴可能範囲は当日の掲示とスタッフ案内を確認してください。' },
+  { category: '設備', question: '車いすやベビーカーで利用できますか？', answer: '平坦な市場エリアが中心ですが、入口、通路、混雑状況、席の配置は店舗ごとに異なります。必要な支援や席がある場合は、混雑前の時間帯を選び、到着時にスタッフへ相談してください。' },
+  { category: '食事', question: '朝食を食べられますか？', answer: '朝から営業する売り場や店はありますが、飲食店すべてが早朝営業ではありません。朝食目的なら、店舗別の開店時間を当日に確認してから向かうのが安全です。' },
+  { category: '支払い', question: 'カードや電子決済は使えますか？', answer: '支払い方法は店舗ごとに異なります。通信障害や端末事情もあるため、少額の現金も用意しておくと安心です。駐車場の精算方法も別途確認してください。' },
+  { category: '荷物', question: '大きな荷物を持って歩けますか？', answer: '混雑した売り場では大きなスーツケースが動きにくいことがあります。駅や宿泊先の預かりを利用できるなら、身軽に訪れる方が食事と買い物を楽しみやすくなります。' },
+  { category: '食事', question: '生魚が苦手でも食べられますか？', answer: 'ラーメン、肉と新潟米の丼、焼き物、牡蠣料理、カフェなどを候補にできます。加熱の程度やアレルギーは、注文前に各店で確認してください。' },
+  { category: '佐渡', question: '佐渡汽船の前に寄れますか？', answer: '組み合わせやすい位置ですが、乗船手続き、繁忙期の混雑、荷物、港内の移動時間を優先してください。短時間なら提供が早い店を選び、冷蔵品は最後に購入します。' },
+] as const;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+---
+
+<BaseLayout
+  title="よくある質問"
+  description="ピアBandaiの営業時間、アクセス、駐車場、子ども連れ、雨の日、ペット、支払い、佐渡汽船前の利用について答える非公式FAQです。"
+  image="/images/whats-niigata.webp"
+  schema={faqSchema}
+>
+  <PageHero
+    eyebrow="QUESTIONS BEFORE THE TRIP"
+    title="港へ行く前の、十三問。"
+    lead="営業時間、駐車、雨の日、子ども連れ、佐渡汽船。現地で迷いやすいことを、短く実用的にまとめました。"
+    image="/images/whats-niigata.webp"
+    imageAlt="万代島の青空とWhat’s NIIGATAのサイン"
+    compact
+  />
+  <Breadcrumbs items={[{ label: 'よくある質問' }]} />
+
+  <section class="section-space">
+    <div class="site-shell-narrow">
+      <SectionTitle eyebrow="FAQ" title="出発前に、知っておきたいこと。" description="以下は旅行計画の目安です。営業、設備、利用条件は変更されることがあるため、当日の現地案内を優先してください。" />
+      <div class="mt-12 divide-y divide-line border-y border-line">
+        {faqs.map((item, index) => (
+          <details class="group py-1">
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-5 py-6 [&::-webkit-details-marker]:hidden">
+              <div class="flex gap-4"><span class="font-serif text-lg text-gold">{String(index + 1).padStart(2, '0')}</span><div><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-vermilion">{item.category}</p><h2 class="mt-2 font-serif text-lg font-semibold leading-8 md:text-xl">{item.question}</h2></div></div>
+              <span class="relative mt-2 h-5 w-5 shrink-0 before:absolute before:left-0 before:top-1/2 before:h-px before:w-5 before:bg-harbor after:absolute after:left-1/2 after:top-0 after:h-5 after:w-px after:bg-harbor after:transition-transform group-open:after:rotate-90"></span>
+            </summary>
+            <div class="pb-7 pl-10 pr-8 md:pl-12"><p class="body-copy text-sm">{item.answer}</p></div>
+          </details>
+        ))}
+      </div>
+      <div class="notice-box mt-10 flex gap-3"><Icon name="info" size={20} class="mt-1 shrink-0 text-vermilion" /><p class="text-xs leading-6 text-ink-soft">このサイトでは予約、問い合わせ、店舗への取次ぎを行っていません。緊急性のある確認は、現地スタッフや利用する交通機関へ直接確認してください。</p></div>
+    </div>
+  </section>
+</BaseLayout>

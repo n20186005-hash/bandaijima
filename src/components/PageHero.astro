@@ -1,0 +1,27 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  image: string;
+  imageAlt: string;
+  compact?: boolean;
+}
+const { eyebrow, title, lead, image, imageAlt, compact = false } = Astro.props;
+---
+
+<section class:list={['relative overflow-hidden bg-harbor text-white', compact ? 'min-h-[420px]' : 'min-h-[520px]']}>
+  <div class="absolute inset-0">
+    <img src={image} alt={imageAlt} width="1280" height="851" class="h-full w-full object-cover" fetchpriority="high" />
+    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,38,50,.9)_0%,rgba(9,38,50,.68)_46%,rgba(9,38,50,.18)_100%)]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(0deg,rgba(9,38,50,.55)_0%,transparent_54%)]"></div>
+  </div>
+  <div class="site-shell relative z-10 flex min-h-[inherit] items-end py-16 md:items-center md:py-24">
+    <div class="max-w-3xl">
+      <p class="text-[0.72rem] font-extrabold tracking-[0.25em] text-white/[.75]">{eyebrow}</p>
+      <h1 class="mt-5 font-serif text-[clamp(2.35rem,6vw,5rem)] font-semibold leading-[1.18] tracking-[0.05em]">{title}</h1>
+      <p class="mt-7 max-w-2xl text-[0.98rem] leading-8 text-white/[.82] md:text-[1.05rem]">{lead}</p>
+    </div>
+  </div>
+  <div class="awning-stripe absolute inset-x-0 bottom-0 h-2"></div>
+</section>

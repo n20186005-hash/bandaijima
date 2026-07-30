@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import ShopCard from '../components/ShopCard.astro';
+import FoodFinder from '../components/FoodFinder.astro';
+import Icon from '../components/Icon.astro';
+import { shops, categoryLabels } from '../data/shops';
+---
+
+<BaseLayout
+  title="ピアBandaiで食べる"
+  description="ピアBandaiの寿司、海鮮丼、牡蠣、ラーメン、新潟米、カフェを旅人の目的別に紹介。待ち時間や滞在時間から一軒を選ぶ非公式グルメガイドです。"
+  image="/images/sushi-platter.webp"
+>
+  <PageHero
+    eyebrow="EAT AT THE PORT"
+    title="港で、何を食べよう。"
+    lead="寿司、海鮮丼、牡蠣、白みそラーメン、新潟米。人気順ではなく、今日の時間と同行者に合う一軒を選びます。"
+    image="/images/sushi-platter.webp"
+    imageAlt="握り寿司の盛り合わせ"
+  />
+  <Breadcrumbs items={[{ label: '食べる' }]} />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-10 lg:grid-cols-[.78fr_1.22fr] lg:items-end">
+        <SectionTitle
+          eyebrow="CHOOSE BY MOOD"
+          title="食べたいものから、港の一軒へ。"
+          description="同じ海鮮でも、寿司で少しずつ味わうか、丼でしっかり食べるかで過ごし方は変わります。生ものを避けたい人にも、新潟米やラーメンの選択肢があります。"
+        />
+        <nav class="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="料理カテゴリ">
+          {Object.entries(categoryLabels).map(([id, label]) => (
+            <a href={`#${id}`} class="flex min-h-12 items-center justify-between border border-line bg-white/[.55] px-4 text-xs font-bold transition hover:border-harbor hover:bg-harbor hover:text-white">{label}<Icon name="arrow" size={15} /></a>
+          ))}
+        </nav>
+      </div>
+
+      <div id="sushi" class="mt-12 scroll-mt-28">
+        <ShopCard shop={shops[0]} index={0} featured />
+      </div>
+      <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {shops.slice(1).map((shop, index) => (
+          <div id={shop.category === 'sushi' ? undefined : shop.category} class="scroll-mt-28">
+            <ShopCard shop={shop} index={index + 1} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-harbor-light/[.45] py-16 md:py-24">
+    <div class="site-shell"><FoodFinder /></div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle eyebrow="TIMING TIPS" title="待つ前に決める、三つのこと。" align="center" />
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+        {[
+          { number: '01', title: '第一候補と代案', text: '人気店が混んでいたら、立ち食い、丼、ラーメンへ。並び始める前に代案を一つ決めます。' },
+          { number: '02', title: '保冷品は最後', text: '食事を先に済ませ、鮮魚や冷蔵品は帰る直前に。持ち歩ける時間を店頭で確認します。' },
+          { number: '03', title: '船と列車を優先', text: '佐渡汽船や帰りの列車がある日は、乗車・乗船時刻から逆算。繁忙期は移動時間にも余白を。' },
+        ].map((item) => (
+          <article class="paper-panel p-7 md:p-8"><p class="editorial-number">{item.number}</p><h3 class="mt-6 font-serif text-xl font-semibold">{item.title}</h3><p class="body-copy mt-4 text-sm">{item.text}</p></article>
+        ))}
+      </div>
+      <div class="mt-10 flex justify-center"><a href="/hours/" class="button-primary">営業時間の見方 <Icon name="arrow" size={17} /></a></div>
+    </div>
+  </section>
+</BaseLayout>

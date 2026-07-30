@@ -1,0 +1,145 @@
+---
+import Icon from './Icon.astro';
+import { courses } from '../data/courses';
+---
+
+<section class="paper-panel overflow-hidden" data-course-planner>
+  <div class="awning-stripe h-2"></div>
+  <div class="p-6 md:p-9">
+    <div class="grid gap-7 border-b border-line pb-8 lg:grid-cols-[.72fr_1.28fr] lg:items-end">
+      <div>
+        <p class="eyebrow">COURSE BUILDER</p>
+        <h2 class="mt-4 font-serif text-3xl font-semibold leading-[1.35]">時間から、港の一日を選ぶ。</h2>
+      </div>
+      <p class="body-copy text-sm">滞在時間を選ぶと、食事・買い物・散歩の順番を組み替えます。混雑日やフェリー利用時は、表示より余裕を持ってください。</p>
+    </div>
+
+    <div class="mt-7 grid gap-8 lg:grid-cols-[270px_1fr] lg:gap-12">
+      <div class="grid content-start gap-2" role="tablist" aria-label="滞在時間を選択">
+        {courses.map((course, index) => (
+          <button
+            type="button"
+            id={course.id}
+            class:list={[
+              'group flex min-h-16 items-center justify-between border px-4 text-left transition',
+              index === 0 ? 'border-harbor bg-harbor text-white' : 'border-line bg-white/[.55] text-ink hover:border-harbor',
+            ]}
+            role="tab"
+            aria-selected={index === 0 ? 'true' : 'false'}
+            data-course-button={course.id}
+          >
+            <span>
+              <span class:list={['block text-[0.62rem] font-extrabold tracking-[0.14em]', index === 0 ? 'text-white/[.65]' : 'text-vermilion']} data-course-kicker>{course.label}</span>
+              <span class="mt-1 block font-serif text-lg font-semibold">{course.duration}</span>
+            </span>
+            <Icon name="arrow" size={18} class="transition group-hover:translate-x-1" />
+          </button>
+        ))}
+      </div>
+
+      <div aria-live="polite">
+        <div class="flex flex-col gap-3 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-[0.65rem] font-extrabold tracking-[0.15em] text-vermilion" data-course-label>{courses[0].label}</p>
+            <h3 class="mt-2 font-serif text-2xl font-semibold" data-course-title>{courses[0].title}</h3>
+          </div>
+          <p class="text-xs font-bold text-ink-soft" data-course-duration>{courses[0].duration}</p>
+        </div>
+        <p class="body-copy mt-5 text-sm" data-course-summary>{courses[0].summary}</p>
+        <ol class="relative mt-7 grid gap-0 before:absolute before:bottom-5 before:left-[1.18rem] before:top-5 before:w-px before:bg-line" data-course-steps>
+          {courses[0].steps.map((step, index) => (
+            <li class="relative grid grid-cols-[40px_1fr] gap-4 pb-6 last:pb-0">
+              <span class="relative z-10 grid h-10 w-10 place-items-center rounded-full border border-harbor bg-paper font-serif text-sm font-semibold text-harbor">{index + 1}</span>
+              <div class="pt-0.5">
+                <p class="text-[0.65rem] font-extrabold tracking-[0.1em] text-vermilion">{step.time}</p>
+                <h4 class="mt-1 font-serif text-lg font-semibold">{step.title}</h4>
+                <p class="mt-2 text-xs leading-6 text-ink-soft">{step.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" data-course-json set:html={JSON.stringify(courses)}></script>
+</section>
+
+<script>
+  type CourseStep = { time: string; title: string; text: string };
+  type Course = { id: string; duration: string; label: string; title: string; summary: string; steps: CourseStep[] };
+
+  const initCoursePlanners = () => {
+    document.querySelectorAll<HTMLElement>('[data-course-planner]').forEach((planner) => {
+      if (planner.dataset.ready === 'true') return;
+      planner.dataset.ready = 'true';
+
+      const raw = planner.querySelector<HTMLScriptElement>('[data-course-json]')?.textContent;
+      if (!raw) return;
+      const courses = JSON.parse(raw) as Course[];
+      const buttons = Array.from(planner.querySelectorAll<HTMLButtonElement>('[data-course-button]'));
+      const label = planner.querySelector<HTMLElement>('[data-course-label]');
+      const title = planner.querySelector<HTMLElement>('[data-course-title]');
+      const duration = planner.querySelector<HTMLElement>('[data-course-duration]');
+      const summary = planner.querySelector<HTMLElement>('[data-course-summary]');
+      const steps = planner.querySelector<HTMLOListElement>('[data-course-steps]');
+
+      const selectCourse = (id: string) => {
+        const course = courses.find((item) => item.id === id);
+        if (!course || !steps) return;
+
+        buttons.forEach((button) => {
+          const active = button.dataset.courseButton === id;
+          button.setAttribute('aria-selected', String(active));
+          button.classList.toggle('border-harbor', active);
+          button.classList.toggle('bg-harbor', active);
+          button.classList.toggle('text-white', active);
+          button.classList.toggle('border-line', !active);
+          button.classList.toggle('bg-white/[.55]', !active);
+          button.classList.toggle('text-ink', !active);
+          const kicker = button.querySelector<HTMLElement>('[data-course-kicker]');
+          kicker?.classList.toggle('text-white/[.65]', active);
+          kicker?.classList.toggle('text-vermilion', !active);
+        });
+
+        if (label) label.textContent = course.label;
+        if (title) title.textContent = course.title;
+        if (duration) duration.textContent = course.duration;
+        if (summary) summary.textContent = course.summary;
+        steps.replaceChildren(...course.steps.map((step, index) => {
+          const li = document.createElement('li');
+          li.className = 'relative grid grid-cols-[40px_1fr] gap-4 pb-6 last:pb-0';
+          const number = document.createElement('span');
+          number.className = 'relative z-10 grid h-10 w-10 place-items-center rounded-full border border-harbor bg-paper font-serif text-sm font-semibold text-harbor';
+          number.textContent = String(index + 1);
+          const content = document.createElement('div');
+          content.className = 'pt-0.5';
+          const time = document.createElement('p');
+          time.className = 'text-[0.65rem] font-extrabold tracking-[0.1em] text-vermilion';
+          time.textContent = step.time;
+          const heading = document.createElement('h4');
+          heading.className = 'mt-1 font-serif text-lg font-semibold';
+          heading.textContent = step.title;
+          const text = document.createElement('p');
+          text.className = 'mt-2 text-xs leading-6 text-ink-soft';
+          text.textContent = step.text;
+          content.append(time, heading, text);
+          li.append(number, content);
+          return li;
+        }));
+      };
+
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        const id = button.dataset.courseButton ?? '60';
+        selectCourse(id);
+        history.replaceState(null, '', `${location.pathname}#${id}`);
+      }));
+
+      const requestedCourse = location.hash.slice(1);
+      if (courses.some((course) => course.id === requestedCourse)) selectCourse(requestedCourse);
+    });
+  };
+
+  initCoursePlanners();
+  document.addEventListener('astro:page-load', initCoursePlanners);
+</script>

@@ -1,0 +1,96 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import { siteConfig } from '../config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  image = '/images/pia-bandai-hero.webp',
+  noindex = false,
+  schema,
+} = Astro.props;
+
+const fullTitle = title ? `${title}｜${siteConfig.shortName}` : siteConfig.name;
+const canonical = new URL(Astro.url.pathname, siteConfig.siteUrl).toString();
+const ogImage = new URL(image, siteConfig.siteUrl).toString();
+const defaultSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: 'みなとのマルシェ ピアBandai',
+  alternateName: 'ピア万代',
+  description,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '万代島2',
+    addressLocality: '新潟市中央区',
+    addressRegion: '新潟県',
+    addressCountry: 'JP',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: siteConfig.coordinates.latitude,
+    longitude: siteConfig.coordinates.longitude,
+  },
+  touristType: ['グルメ旅行者', '家族旅行', '一人旅'],
+  isAccessibleForFree: true,
+  image: ogImage,
+};
+const jsonLd = schema ?? defaultSchema;
+---
+
+<!doctype html>
+<html lang={siteConfig.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#123f53" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={siteConfig.locale} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={siteConfig.shortName} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Google tag (gtag.js) -->
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.gaId}`}></script>
+    <script is:inline define:vars={{ gaId: siteConfig.gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', gaId, { anonymize_ip: true });
+    </script>
+  </head>
+  <body>
+    <a href="#main-content" class="fixed left-3 top-3 z-[100] -translate-y-24 bg-white px-4 py-3 text-sm font-bold text-harbor shadow-lg transition-transform focus:translate-y-0">本文へ移動</a>
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

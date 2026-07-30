@@ -1,0 +1,100 @@
+---
+import Icon from './Icon.astro';
+import { siteConfig } from '../config/site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="sticky top-0 z-50 border-b border-line/[.80] bg-paper/[.94] backdrop-blur-xl">
+  <div class="awning-stripe h-1.5"></div>
+  <div class="site-shell flex h-[76px] items-center justify-between gap-6">
+    <a href="/" class="group flex items-center gap-3" aria-label="みなと日和 ホーム">
+      <span class="grid h-10 w-10 place-items-center border border-harbor bg-harbor text-white transition-transform group-hover:-rotate-3">
+        <span class="text-center font-serif text-[0.65rem] font-bold leading-tight tracking-[0.08em]">港<br/>日和</span>
+      </span>
+      <span>
+        <span class="block font-serif text-[1.02rem] font-semibold tracking-[0.13em] text-harbor">みなと日和</span>
+        <span class="mt-0.5 block text-[0.56rem] font-bold tracking-[0.18em] text-ink-soft">NIIGATA BANDAIJIMA GUIDE</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-6 lg:flex" aria-label="主要ナビゲーション">
+      {siteConfig.nav.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            'relative py-2 text-[0.76rem] font-extrabold tracking-[0.08em] transition-colors hover:text-vermilion',
+            isActive(item.href) ? 'text-vermilion after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-vermilion' : 'text-ink',
+          ]}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/access/" class="button-primary hidden min-h-10 px-4 text-[0.72rem] md:inline-flex">
+        行き方を見る
+        <Icon name="arrow" size={16} />
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="grid h-11 w-11 place-items-center border border-line bg-white/[.50] text-harbor lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="メニューを開く"
+      >
+        <span data-menu-icon><Icon name="menu" size={22} /></span>
+        <span data-close-icon class="hidden"><Icon name="close" size={22} /></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="hidden border-t border-line bg-paper lg:hidden">
+    <nav class="site-shell grid py-4" aria-label="モバイルナビゲーション">
+      {siteConfig.nav.map((item, index) => (
+        <a
+          href={item.href}
+          class:list={[
+            'flex min-h-13 items-center justify-between border-b border-line/[.70] py-3 text-sm font-bold tracking-[0.08em]',
+            isActive(item.href) ? 'text-vermilion' : 'text-ink',
+          ]}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          <span><span class="mr-3 font-serif text-gold">0{index + 1}</span>{item.label}</span>
+          <Icon name="arrow" size={17} />
+        </a>
+      ))}
+      <a href="/about/" class="flex min-h-12 items-center justify-between py-3 text-xs font-bold tracking-[0.08em] text-ink-soft">
+        このサイトについて
+        <Icon name="arrow" size={16} />
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const setupMenu = () => {
+    const toggle = document.querySelector<HTMLButtonElement>('#menu-toggle');
+    const menu = document.querySelector<HTMLElement>('#mobile-menu');
+    const menuIcon = toggle?.querySelector<HTMLElement>('[data-menu-icon]');
+    const closeIcon = toggle?.querySelector<HTMLElement>('[data-close-icon]');
+    if (!toggle || !menu || toggle.dataset.ready === 'true') return;
+
+    toggle.dataset.ready = 'true';
+    toggle.addEventListener('click', () => {
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'メニューを開く' : 'メニューを閉じる');
+      menu.classList.toggle('hidden', isOpen);
+      menuIcon?.classList.toggle('hidden', !isOpen);
+      closeIcon?.classList.toggle('hidden', isOpen);
+    });
+  };
+
+  setupMenu();
+  document.addEventListener('astro:page-load', setupMenu);
+</script>

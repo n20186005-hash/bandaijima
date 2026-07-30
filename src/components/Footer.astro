@@ -1,0 +1,46 @@
+---
+import Icon from './Icon.astro';
+import { siteConfig } from '../config/site';
+---
+
+<footer class="relative overflow-hidden bg-harbor text-white">
+  <div class="awning-stripe h-2"></div>
+  <div class="site-shell grid gap-12 py-16 md:grid-cols-[1.1fr_.9fr] md:py-20">
+    <div>
+      <div class="flex items-center gap-4">
+        <span class="grid h-13 w-13 place-items-center border border-white/[.50] text-white">
+          <span class="text-center font-serif text-xs font-bold leading-tight tracking-[0.08em]">港<br/>日和</span>
+        </span>
+        <div>
+          <p class="font-serif text-xl font-semibold tracking-[0.13em]">みなと日和</p>
+          <p class="mt-1 text-[0.61rem] font-bold tracking-[0.2em] text-white/[.55]">PIER BANDAI TRAVEL NOTE</p>
+        </div>
+      </div>
+      <p class="mt-7 max-w-xl text-sm leading-8 text-white/[.68]">
+        日本海の魚、新潟米、地酒、港の景色。万代島で過ごす時間を、迷わず自分らしく組み立てるための旅行者向けガイドです。
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3 text-[0.7rem] font-bold tracking-[0.07em] text-white/[.72]">
+        <span class="border border-white/[.20] px-3 py-2">日本語のみ</span>
+        <span class="border border-white/[.20] px-3 py-2">非公式ガイド</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-8 gap-y-3 text-sm md:min-w-[360px] md:justify-self-end">
+      {siteConfig.nav.map((item) => (
+        <a href={item.href} class="flex items-center justify-between border-b border-white/[.14] py-3 font-bold tracking-[0.06em] text-white/[.78] transition-colors hover:text-white">
+          {item.label}<Icon name="arrow" size={15} />
+        </a>
+      ))}
+      <a href="/about/" class="flex items-center justify-between border-b border-white/[.14] py-3 font-bold tracking-[0.06em] text-white/[.78] transition-colors hover:text-white">サイト案内<Icon name="arrow" size={15} /></a>
+      <a href="/privacy/" class="flex items-center justify-between border-b border-white/[.14] py-3 font-bold tracking-[0.06em] text-white/[.78] transition-colors hover:text-white">プライバシー<Icon name="arrow" size={15} /></a>
+      <a href="/credits/" class="flex items-center justify-between border-b border-white/[.14] py-3 font-bold tracking-[0.06em] text-white/[.78] transition-colors hover:text-white">写真クレジット<Icon name="arrow" size={15} /></a>
+    </div>
+  </div>
+
+  <div class="border-t border-white/[.12]">
+    <div class="site-shell flex flex-col gap-3 py-6 text-[0.65rem] leading-6 tracking-[0.05em] text-white/[.50] md:flex-row md:items-center md:justify-between">
+      <p>当サイトは施設公式サイトではありません。営業内容は変更される場合があります。</p>
+      <p>© {new Date().getFullYear()} みなと日和</p>
+    </div>
+  </div>
+</footer>

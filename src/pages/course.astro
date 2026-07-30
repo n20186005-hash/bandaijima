@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import CoursePlanner from '../components/CoursePlanner.astro';
+import Icon from '../components/Icon.astro';
+
+type TimingIcon = 'clock' | 'bag' | 'ship' | 'walk';
+const timingNotes: { icon: TimingIcon; title: string; text: string }[] = [
+  { icon: 'clock', title: '昼の混雑', text: '人気店は待ち時間を見込み、代案を決める。' },
+  { icon: 'bag', title: '買い物', text: '品選びと保冷相談に15〜30分の余白。' },
+  { icon: 'ship', title: 'フェリー', text: '出航時刻ではなく、手続き開始から逆算。' },
+  { icon: 'walk', title: '冬の徒歩', text: '雪、風、凍結で移動が遅れる前提に。' },
+];
+---
+
+<BaseLayout
+  title="モデルコース"
+  description="ピアBandaiを60分、2時間、半日、佐渡汽船乗船前で楽しむモデルコース。食事、買い物、萬代橋、朱鷺メッセを無理なくつなぎます。"
+  image="/images/bandai-bridge.webp"
+>
+  <PageHero
+    eyebrow="PORT DAY PLAN"
+    title="時間から選ぶ、港の一日。"
+    lead="市場だけをさっと楽しむ60分から、萬代橋と朱鷺メッセをつなぐ半日まで。移動時刻を守りながら、新潟らしさを残します。"
+    image="/images/bandai-bridge.webp"
+    imageAlt="信濃川に架かる萬代橋"
+  />
+  <Breadcrumbs items={[{ label: 'モデルコース' }]} />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <CoursePlanner />
+    </div>
+  </section>
+
+  <section class="bg-paper-deep/[.68] py-16 md:py-24">
+    <div class="site-shell">
+      <SectionTitle eyebrow="WATERFRONT SCENES" title="食の前後に、港の景色を。" description="市場の活気、信濃川の橋、万代島の高層棟。写真を撮る時間を数分入れるだけで、移動が観光になります。" />
+      <div class="mt-12 grid gap-5 md:grid-cols-12 md:grid-rows-[260px_260px]">
+        <figure class="image-frame min-h-[310px] md:col-span-7 md:row-span-2"><img src="/images/niigata-city-night.webp" alt="朱鷺メッセから見た新潟市の夜景" width="1280" height="960" loading="lazy" /><figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-harbor/[.88] to-transparent px-6 pb-6 pt-16 text-sm font-bold text-white">展望から見る、新潟の夜</figcaption></figure>
+        <figure class="image-frame min-h-[250px] md:col-span-5"><img src="/images/whats-niigata.webp" alt="万代島のWhat’s NIIGATAサイン" width="1280" height="960" loading="lazy" /><figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-harbor/[.82] to-transparent px-5 pb-5 pt-12 text-xs font-bold text-white">万代島の記念写真</figcaption></figure>
+        <figure class="image-frame min-h-[250px] md:col-span-5"><img src="/images/toki-messe.webp" alt="万代島の朱鷺メッセ" width="960" height="1715" loading="lazy" class="object-center" /><figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-harbor/[.82] to-transparent px-5 pb-5 pt-12 text-xs font-bold text-white">港沿いを朱鷺メッセへ</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell grid gap-10 lg:grid-cols-[.75fr_1.25fr] lg:items-start">
+      <div><p class="eyebrow">KEEP THE SCHEDULE</p><h2 class="section-title mt-4">予定を守るための、余白。</h2><p class="body-copy mt-6">市場では、待ち時間、商品選び、保冷対応に想定外の時間がかかります。移動日のコースでは「最後の一軒」を詰め込みすぎません。</p></div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {timingNotes.map((item) => (
+          <article class="paper-panel p-6"><Icon name={item.icon} size={26} class="text-vermilion" /><h3 class="mt-5 font-serif text-xl font-semibold">{item.title}</h3><p class="body-copy mt-3 text-xs">{item.text}</p></article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-harbor py-12 text-white">
+    <div class="site-shell flex flex-col gap-5 md:flex-row md:items-center md:justify-between"><div><p class="text-[0.65rem] font-extrabold tracking-[0.16em] text-white/[.55]">NEXT STEP</p><h2 class="mt-2 font-serif text-2xl font-semibold">移動方法と営業時間を、最後に確認。</h2></div><div class="flex flex-wrap gap-3"><a href="/access/" class="button-secondary">アクセス <Icon name="arrow" size={16} /></a><a href="/hours/" class="button-secondary">営業時間 <Icon name="arrow" size={16} /></a></div></div>
+  </section>
+</BaseLayout>

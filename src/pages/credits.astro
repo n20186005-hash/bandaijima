@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import Icon from '../components/Icon.astro';
+
+const photos = [
+  {
+    file: 'pia-bandai-hero.webp',
+    title: 'みなとのマルシェ ピアBandai外観',
+    author: 'Fumihiko Ueno',
+    license: 'CC BY 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:2_Bandaijima,_Ch%C5%AB%C5%8D-ku,_Niigata-shi,_Niigata-ken_950-0078,_Japan_-_panoramio.jpg',
+  },
+  {
+    file: 'toki-messe.webp',
+    title: '朱鷺メッセ',
+    author: 'J o',
+    license: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Toki-Messe-01.jpg',
+  },
+  {
+    file: 'whats-niigata.webp',
+    title: 'What’s NIIGATAと朱鷺メッセ',
+    author: 'Drph17',
+    license: 'CC BY 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:What%27s_Niigata_and_Toki_Messe_Sep2021.jpg',
+  },
+  {
+    file: 'bandai-bridge.webp',
+    title: '萬代橋',
+    author: 'Tackey0903jp',
+    license: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Bandaibashi-Bridge-01.JPG',
+  },
+  {
+    file: 'sushi-platter.webp',
+    title: '握り寿司の盛り合わせ',
+    author: 'ウィ貴公子',
+    license: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:202407171813_IMG_7121.jpg',
+  },
+  {
+    file: 'seafood-market.webp',
+    title: '寺泊魚の市場通りのベニズワイガニ',
+    author: 'ひでわく',
+    license: 'CC BY-SA 2.1 JP',
+    source: 'https://commons.wikimedia.org/wiki/File:Red_Snow_Crabs_-_Teradomari_Fish_Market_Street.jpg',
+  },
+  {
+    file: 'niigata-rice.webp',
+    title: '新潟県十日町市の水田',
+    author: 'Narudora',
+    license: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Rice_fields_in_Tokamachi_city,_Niigata_pref_(2).jpg',
+  },
+  {
+    file: 'niigata-sake.webp',
+    title: 'にいがた酒の陣',
+    author: 'DAI-nk',
+    license: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Niigata_sake_no_jin_01.JPG',
+  },
+  {
+    file: 'niigata-city-night.webp',
+    title: '朱鷺メッセから見た新潟市の夜景',
+    author: 'るーと16',
+    license: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Niigata_city_night_view.jpg',
+  },
+] as const;
+---
+
+<BaseLayout title="写真クレジット" description="みなと日和で使用している実在写真の撮影者、ライセンス、原典を掲載します。" image="/images/whats-niigata.webp">
+  <PageHero eyebrow="PHOTO CREDITS" title="写真を届けてくれた人へ。" lead="サイト内の写真はWikimedia Commonsで公開された実在の写真を、表示に適したWebPへ変換して使用しています。" image="/images/whats-niigata.webp" imageAlt="万代島のWhat’s NIIGATAサイン" compact />
+  <Breadcrumbs items={[{ label: '写真クレジット' }]} />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle eyebrow="ATTRIBUTION" title="撮影者・ライセンス・原典" description="画像はトリミング、縮小、WebP変換を行っています。著作権は各撮影者に帰属し、各ライセンス条件に従います。このページだけ、確認のため原典への外部リンクを掲載します。" />
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {photos.map((photo) => (
+          <article class="paper-panel flex h-full flex-col overflow-hidden">
+            <div class="image-frame aspect-[4/3]"><img src={`/images/${photo.file}`} alt={photo.title} width="640" height="480" loading="lazy" /></div>
+            <div class="flex flex-1 flex-col p-6">
+              <h2 class="font-serif text-lg font-semibold leading-7">{photo.title}</h2>
+              <dl class="mt-5 grid gap-2 border-t border-line pt-4 text-xs">
+                <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold">撮影</dt><dd class="text-ink-soft">{photo.author}</dd></div>
+                <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold">ライセンス</dt><dd class="text-ink-soft">{photo.license}</dd></div>
+                <div class="flex gap-3"><dt class="w-20 shrink-0 font-extrabold">使用ファイル</dt><dd class="break-all text-ink-soft">{photo.file}</dd></div>
+              </dl>
+              <a href={photo.source} target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor underline decoration-line underline-offset-4">原典を確認 <Icon name="arrow" size={15} /></a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
