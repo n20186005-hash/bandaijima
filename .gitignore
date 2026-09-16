@@ -1,9 +1,54 @@
+# 依存関係
 node_modules/
+.pnpm-store/
+
+# ビルド成果物（Cloudflare Workers へは dist/ を手動アップロードするため、リポジトリには含めない）
 dist/
+.output/
+build/
+.vercel/
+.netlify/
+
+# Astro / Wrangler のキャッシュとローカル状態
 .astro/
 .wrangler/
+wrangler.toml.bak
 .dev.vars
+.dev.vars.*
+worker-configuration.d.ts
+
+# 環境変数（.env.example のみコミットする）
 .env
 .env.*
 !.env.example
+
+# ログと一時ファイル
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+*.temp
+*.bak
+.cache/
+.tmp/
+
+# エディタ・OS
 .DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+
+# 生成物（AI 生成画像などの作業用ディレクトリ）
+generated-images/
+
+# テスト・計測の出力
+coverage/
+playwright-report/
+test-results/
+lighthouse-report/

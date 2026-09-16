@@ -5,15 +5,66 @@ import SectionTitle from '../components/SectionTitle.astro';
 import ShopCard from '../components/ShopCard.astro';
 import FoodFinder from '../components/FoodFinder.astro';
 import AccessDiagram from '../components/AccessDiagram.astro';
+import GoogleRating from '../components/GoogleRating.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import WeatherPanel from '../components/WeatherPanel.astro';
 import { shops } from '../data/shops';
+import { attraction } from '../config/site';
+
+const { fullName, shortName, city, stateProvince, country, mapsShareUrl, govtTourismUrl, cityOfficialUrl, cityOfficialLabel, officialSiteUrl, officialSiteLabel } = attraction;
+const [nearbyLandmark1, nearbyLandmark2] = attraction.nearbyLandmarks;
+const geoTrail = [fullName, city, stateProvince, country];
+
+/** 目的別の読み分け導線（内部リンクの整理も兼ねる） */
+const tripGuides = [
+  {
+    icon: 'clock' as const,
+    title: '何時に開いているか',
+    text: '店舗ごとに異なる営業時間と定休日の考え方、売り切れの傾向をまとめました。',
+    href: '/hours/',
+  },
+  {
+    icon: 'train' as const,
+    title: '空港・駅・車からの行き方',
+    text: '新潟駅からの徒歩とバス、空港からの所要時間、駐車場の使い方までを整理しています。',
+    href: '/access/',
+  },
+  {
+    icon: 'child' as const,
+    title: '誰と行くかで変える',
+    text: '親子連れ、写真目的、歩行に不安がある場合の時間割と持ち物を用意しました。',
+    href: '/plan/',
+  },
+  {
+    icon: 'toilet' as const,
+    title: 'トイレ・駐車・給油と充電',
+    text: '館内と周辺の設備を種類ごとに整理し、当日どこで確認するかまで書いています。',
+    href: '/services/',
+  },
+  {
+    icon: 'cloud-sun' as const,
+    title: '季節と天気の読み方',
+    text: '12か月の気候値と旬の魚、日本海側の天気の読み方をデータで整理しました。',
+    href: '/season/',
+  },
+  {
+    icon: 'book' as const,
+    title: '港の歴史と名前の由来',
+    text: '萬代橋と新潟港のあゆみ、地名の由来、河口部の自然をまとめています。',
+    href: '/heritage/',
+  },
+];
 ---
 
-<BaseLayout>
+<BaseLayout
+  description={`${fullName}（${shortName}）は、${stateProvince}${city}・万代島にある港の市場です。場所と行き方、周辺の${nearbyLandmark1}や${nearbyLandmark2}、食事と買い物の選び方、旅行のヒントをまとめました。`}
+  ogImageAlt={`${fullName}（${city}・${stateProvince}）の市場エリア`}
+>
   <section class="relative min-h-[760px] overflow-hidden bg-harbor text-white md:min-h-[820px]">
     <div class="absolute inset-0">
       <img
         src="/images/pia-bandai-hero.webp"
-        alt="新潟市万代島にある、みなとのマルシェ ピアBandaiの外観"
+        alt={`${fullName}（${city}・${country}）の外観 — 万代島の港に面した市場エリア`}
         width="1280"
         height="851"
         class="h-full w-full object-cover object-center"
@@ -35,6 +86,9 @@ import { shops } from '../data/shops';
         <p class="mt-8 max-w-2xl text-[0.98rem] leading-9 text-white/[.82] md:text-lg">
           日本海の魚、佐渡の寿司、新潟米と地酒。<br class="hidden sm:block" />ピアBandaiを迷わず楽しむための、旅人目線の食と港の手帖です。
         </p>
+        <p class="mt-5 max-w-2xl text-[0.82rem] leading-7 text-white/[.68]">
+          {fullName}（{shortName}）／{stateProvince}{city}・万代島
+        </p>
         <div class="mt-10 flex flex-col gap-3 sm:flex-row">
           <a href="/gourmet/" class="button-primary bg-vermilion hover:bg-[#aa3a27]">食べるものを選ぶ <Icon name="arrow" size={17} /></a>
           <a href="/hours/" class="button-secondary">営業時間を見る <Icon name="clock" size={17} /></a>
@@ -49,6 +103,25 @@ import { shops } from '../data/shops';
         <div class="px-4 py-5 md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">FROM STATION</p><p class="mt-1 font-serif text-lg">徒歩 約15〜20分</p></div>
         <div class="hidden px-4 py-5 md:block md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">BEST FOR</p><p class="mt-1 font-serif text-lg">海鮮・市場・港散歩</p></div>
         <div class="hidden px-4 py-5 md:block md:px-7"><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.50]">GUIDE STATUS</p><p class="mt-1 font-serif text-lg">非公式・随時更新</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space pb-0 md:pb-0">
+    <div class="site-shell">
+      <GoogleRating />
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="TODAY AT THE PORT"
+        title="今日の港は、どんな日和か。"
+        description="港の予定は天気で決まります。現在の気温と風、これから3日間の見通しを確認して、食べる順番と歩く順番を決めてください。"
+      />
+      <div class="mt-10">
+        <WeatherPanel variant="compact" />
       </div>
     </div>
   </section>
@@ -91,7 +164,7 @@ import { shops } from '../data/shops';
 
       <div class="mt-12 grid gap-5 md:grid-cols-12 md:grid-rows-[250px_250px]">
         <a href="/shopping/#seafood" class="group image-frame min-h-[320px] md:col-span-7 md:row-span-2">
-          <img src="/images/seafood-market.webp" alt="新潟県内の魚市場に並ぶ海産物" width="1280" height="855" loading="lazy" />
+          <img src="/images/seafood-market.webp" alt={`${shortName}周辺の市場に並ぶ新潟県内の海産物`} width="1280" height="855" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.82] via-transparent to-transparent"></div>
           <div class="absolute inset-x-0 bottom-0 z-10 p-7 text-white md:p-9">
             <p class="text-[0.65rem] font-extrabold tracking-[0.18em] text-white/[.65]">01 · SEAFOOD</p>
@@ -100,12 +173,12 @@ import { shops } from '../data/shops';
           </div>
         </a>
         <a href="/shopping/#rice" class="group image-frame min-h-[250px] md:col-span-5">
-          <img src="/images/niigata-rice.webp" alt="新潟県十日町市の水田" width="1280" height="720" loading="lazy" />
+          <img src="/images/niigata-rice.webp" alt={`${fullName}で扱われる新潟米 — 新潟県十日町市の水田`} width="1280" height="720" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.78] via-transparent to-transparent"></div>
           <div class="absolute inset-x-0 bottom-0 z-10 p-6 text-white"><p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-white/[.65]">02 · RICE</p><h3 class="mt-2 font-serif text-2xl font-semibold">新潟米と農産物</h3></div>
         </a>
         <a href="/shopping/#sake" class="group image-frame min-h-[250px] md:col-span-5">
-          <img src="/images/niigata-sake.webp" alt="新潟の日本酒イベント会場に並ぶ酒樽" width="1280" height="960" loading="lazy" />
+          <img src="/images/niigata-sake.webp" alt={`${shortName}で選べる新潟の地酒 — 日本酒イベント会場に並ぶ酒樽`} width="1280" height="960" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-harbor/[.80] via-transparent to-transparent"></div>
           <div class="absolute inset-x-0 bottom-0 z-10 p-6 text-white"><p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-white/[.65]">03 · SAKE</p><h3 class="mt-2 font-serif text-2xl font-semibold">地酒と常温の土産</h3></div>
         </a>
@@ -134,8 +207,8 @@ import { shops } from '../data/shops';
     <div class="site-shell">
       <div class="grid gap-8 lg:grid-cols-2 lg:items-center">
         <div class="relative">
-          <div class="image-frame aspect-[4/3] lg:mr-14"><img src="/images/bandai-bridge.webp" alt="信濃川に架かる萬代橋" width="1280" height="720" loading="lazy" /></div>
-          <div class="image-frame -mt-16 ml-auto aspect-[4/3] w-[58%] border-[10px] border-paper lg:absolute lg:-bottom-12 lg:right-0 lg:mt-0"><img src="/images/toki-messe.webp" alt="万代島に立つ朱鷺メッセ" width="960" height="1715" loading="lazy" /></div>
+          <div class="image-frame aspect-[4/3] lg:mr-14"><img src="/images/bandai-bridge.webp" alt={`${attraction.nearbyLandmarks[1].name} — ${shortName}の最寄り、信濃川に架かる橋`} width="1280" height="720" loading="lazy" /></div>
+          <div class="image-frame -mt-16 ml-auto aspect-[4/3] w-[58%] border-[10px] border-paper lg:absolute lg:-bottom-12 lg:right-0 lg:mt-0"><img src="/images/toki-messe.webp" alt={`${attraction.nearbyLandmarks[0].name} — ${shortName}から港沿いに歩ける万代島のランドマーク`} width="960" height="1715" loading="lazy" /></div>
         </div>
         <div class="pt-4 lg:pl-10">
           <p class="eyebrow">HALF-DAY WALK</p>
@@ -152,6 +225,100 @@ import { shops } from '../data/shops';
     </div>
   </section>
 
+  <!-- 単一実体ガイド：正式名称・俗称・所在の対応関係を本文で明示 -->
+  <section id="about-attraction" class="section-space bg-white/[.45]">
+    <div class="site-shell">
+      <nav aria-label="所在地の階層" class="flex flex-wrap items-center gap-2 text-[0.7rem] font-extrabold tracking-[0.06em] text-ink-soft">
+        {geoTrail.map((item, index) => (
+          <>
+            {index > 0 && <span aria-hidden="true" class="text-line">→</span>}
+            <span class:list={[index === 0 ? 'text-harbor' : '']}>{item}</span>
+          </>
+        ))}
+      </nav>
+
+      <div class="mt-10 grid gap-10 lg:grid-cols-[.78fr_1.22fr] lg:items-end">
+        <SectionTitle
+          eyebrow="ABOUT THE PLACE"
+          title={`${fullName}（${city}）`}
+          description={`${fullName}は、新潟市中央区・万代島にある港の市場です。「${shortName}」「ピア万代」という通称でも親しまれ、海鮮、寿司、新潟米、地酒、農産物が同じ敷地に集まります。`}
+        />
+        <p class="body-copy border-b border-line pb-4 text-sm">
+          ようこそ、{fullName}へ。一般に「{shortName}」として親しまれているこの場所は、{stateProvince}{city}・{country}の万代島にあり、新潟港の食文化に触れたい旅行者の入口になります。
+        </p>
+      </div>
+
+      <div class="mt-14 grid gap-10 lg:grid-cols-2">
+        <article class="prose-jp">
+          <h2>場所と行き方：{city}の{shortName}</h2>
+          <p>{fullName}は、{city}万代島2-2（にぎわいマルシェ）に位置し、郵便番号は{attraction.postalCode}です。JR新潟駅の万代口から徒歩約15〜20分、路線バスなら「ピアBandai前」が分かりやすい降車地点になります。朱鷺メッセと佐渡汽船のりばが近く、港沿いの散歩と組み合わせやすい立地です。</p>
+          <p>車で訪れる場合は、敷地内駐車場と万代島周辺の駐車場を当日の案内に従って選びます。週末や催事日は混雑しやすいため、入庫時に料金表示と精算方法を確認しておくと安心です。</p>
+          <p><a href={mapsShareUrl} target="_blank" rel="noopener noreferrer nofollow" class="inline-flex items-center gap-2 font-bold text-harbor underline decoration-line underline-offset-4">Google マップで場所を確認する <Icon name="arrow" size={16} /></a></p>
+        </article>
+
+        <article class="prose-jp">
+          <h2>{shortName}周辺のランドマークと立ち寄り先</h2>
+          <p>{fullName}を訪れる際は、周辺のランドマークや見どころもあわせて巡りやすい場所です。代表的な立ち寄り先には{attraction.nearbyLandmarks[0].name}と{attraction.nearbyLandmarks[1].name}があります。展望フロアからは新潟市街、日本海、佐渡方面の眺めが期待でき、橋と信濃川の景色は港散歩の起点になります。</p>
+          <p>佐渡汽船の乗船前後に立ち寄る場合は、提供の早い店を選び、保冷が必要な買い物は最後に回すと旅程が組みやすくなります。</p>
+          <ul class="mt-5 grid gap-3 text-sm">
+            <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" /><a href={attraction.nearbyLandmarks[0].url} target="_blank" rel="noopener noreferrer" class="font-bold text-harbor underline decoration-line underline-offset-4">{attraction.nearbyLandmarks[0].name}</a></li>
+            <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" /><span>{attraction.nearbyLandmarks[1].name}と信濃川沿いの散歩道</span></li>
+            <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" /><span>佐渡汽船のりば（フェリー利用時の玄関口）</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="mt-14 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:items-start">
+        <article class="prose-jp">
+          <h2>港の歴史と、この場所の役割</h2>
+          <p>万代島は、信濃川の河口に位置する新潟港の一角です。新潟港は近代日本の開港場のひとつとして発展し、万代島は物流と人の玄関口として機能してきました。現在は、朱鷺メッセや佐渡汽船のりば、公園や水辺の散歩道が集まる港の複合エリアになっています。</p>
+          <p>その中で{fullName}は、食を軸にした港の拠点です。鮮魚、青果、米、地酒、飲食が同じ敷地に並び、買い物と食事を一度に完結できる構成になっています。開港を記念して植えられたオリーブの木など、港の記憶を感じられる場所も敷地内にあります。</p>
+          <p>「万代」という地名が萬代橋に由来すること、施設名の「ピア」が桟橋を意味すること。名前の理由を知ってから歩くと、港の景色の見え方が変わります。年表と由来は<a href="/heritage/" class="font-bold text-harbor underline decoration-line underline-offset-4">歴史・伝承のページ</a>にまとめました。</p>
+          <p class="text-xs">沿革や施設の詳細は、公式サイトの案内をご確認ください。<a href={officialSiteUrl} target="_blank" rel="noopener noreferrer nofollow" class="font-bold text-harbor underline decoration-line underline-offset-4">{officialSiteLabel}</a></p>
+        </article>
+
+        <aside class="paper-panel p-7 md:p-8">
+          <p class="eyebrow">FACT SHEET</p>
+          <dl class="mt-6 grid gap-4 text-sm">
+            <div class="grid grid-cols-[92px_1fr] gap-3 border-b border-line pb-3"><dt class="font-extrabold text-ink">正式名称</dt><dd class="text-ink-soft">{fullName}</dd></div>
+            <div class="grid grid-cols-[92px_1fr] gap-3 border-b border-line pb-3"><dt class="font-extrabold text-ink">通称</dt><dd class="text-ink-soft">{shortName}／ピア万代</dd></div>
+            <div class="grid grid-cols-[92px_1fr] gap-3 border-b border-line pb-3"><dt class="font-extrabold text-ink">住所</dt><dd class="text-ink-soft">{attraction.addressLabel}</dd></div>
+            <div class="grid grid-cols-[92px_1fr] gap-3 border-b border-line pb-3"><dt class="font-extrabold text-ink">電話</dt><dd class="text-ink-soft">{attraction.telephoneLabel}</dd></div>
+            <div class="grid grid-cols-[92px_1fr] gap-3 border-b border-line pb-3"><dt class="font-extrabold text-ink">座標</dt><dd class="text-ink-soft">{attraction.coordinates.latitude}, {attraction.coordinates.longitude}</dd></div>
+            <div class="grid grid-cols-[92px_1fr] gap-3"><dt class="font-extrabold text-ink">地図コード</dt><dd class="text-ink-soft">{attraction.plusCode}</dd></div>
+          </dl>
+          <div class="mt-6 grid gap-3">
+            <a href="/access/" class="button-primary">アクセスの詳細 <Icon name="arrow" size={16} /></a>
+            <a href={govtTourismUrl} target="_blank" rel="noopener noreferrer" class="button-quiet">公式観光情報（{stateProvince}） <Icon name="arrow" size={16} /></a>
+            <a href={cityOfficialUrl} target="_blank" rel="noopener noreferrer" class="button-quiet">{cityOfficialLabel} <Icon name="arrow" size={16} /></a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space bg-paper-deep/[.35]">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="PLAN YOUR DAY"
+        title="出かける前に、揃えておく。"
+        description="同じ港でも、誰と行くか、どの季節か、何を優先するかで最適な一日は変わります。目的別に読み分けてください。"
+      />
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {tripGuides.map((guide) => (
+          <a href={guide.href} class="paper-panel group flex h-full flex-col p-7 transition-transform hover:-translate-y-1">
+            <div class="flex items-center justify-between gap-4">
+              <Icon name={guide.icon} size={26} class="text-vermilion" />
+              <Icon name="arrow" size={18} class="text-line transition-colors group-hover:text-vermilion" />
+            </div>
+            <h3 class="mt-5 font-serif text-xl font-semibold leading-8">{guide.title}</h3>
+            <p class="mt-3 text-xs leading-6 text-ink-soft">{guide.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <section class="bg-paper-deep/[.72] py-12">
     <div class="site-shell flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
       <div class="flex gap-4">
@@ -161,4 +328,6 @@ import { shops } from '../data/shops';
       <a href="/hours/" class="button-quiet shrink-0">確認ポイントを見る <Icon name="arrow" size={16} /></a>
     </div>
   </section>
+
+  <SourcesSection />
 </BaseLayout>

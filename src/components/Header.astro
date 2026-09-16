@@ -19,8 +19,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       </span>
     </a>
 
-    <nav class="hidden items-center gap-6 lg:flex" aria-label="主要ナビゲーション">
-      {siteConfig.nav.map((item) => (
+    <nav class="hidden items-center gap-5 lg:flex xl:gap-6" aria-label="主要ナビゲーション">
+      {siteConfig.navPrimary.map((item) => (
         <a
           href={item.href}
           class:list={[

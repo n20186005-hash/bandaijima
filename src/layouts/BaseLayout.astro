@@ -2,12 +2,13 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
-import { siteConfig } from '../config/site';
+import { siteConfig, attraction, attractionId, absoluteUrl, canonicalOrigin } from '../config/site';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  ogImageAlt?: string;
   noindex?: boolean;
   schema?: Record<string, unknown> | Record<string, unknown>[];
 }
@@ -15,39 +16,59 @@ interface Props {
 const {
   title,
   description = siteConfig.description,
-  image = '/images/pia-bandai-hero.webp',
+  image = attraction.heroImage,
+  ogImageAlt,
   noindex = false,
   schema,
 } = Astro.props;
 
 const fullTitle = title ? `${title}｜${siteConfig.shortName}` : siteConfig.name;
-const canonical = new URL(Astro.url.pathname, siteConfig.siteUrl).toString();
-const ogImage = new URL(image, siteConfig.siteUrl).toString();
+const canonical = new URL(Astro.url.pathname, `${canonicalOrigin}/`).toString();
+const ogImage = absoluteUrl(image);
+const resolvedOgImageAlt = ogImageAlt ?? `${attraction.fullName}（${attraction.city}・${attraction.stateProvince}）の風景`;
+
+/**
+ * 単一実体（TouristAttraction）の構造化データ。
+ * 施設名・住所・座標・地図URLを Knowledge Graph 上で一意に紐付ける。
+ * 注意: Google マップの評価・クチコミ数は表示専用のため、ここには含めない（aggregateRating 不使用）。
+ */
 const defaultSchema = {
   '@context': 'https://schema.org',
   '@type': 'TouristAttraction',
-  name: 'みなとのマルシェ ピアBandai',
-  alternateName: 'ピア万代',
-  description,
+  '@id': attractionId,
+  name: attraction.fullName,
+  alternateName: [...attraction.alternateNames],
+  description: `新潟市中央区・万代島にある「${attraction.fullName}」の来訪者向け総合ガイド。場所、アクセス、営業時間の考え方、周辺ランドマーク、旅行のヒントをまとめています。`,
+  url: `${canonicalOrigin}/`,
+  image: attraction.schemaImages.map((path) => absoluteUrl(path)),
+  isAccessibleForFree: attraction.isAccessibleForFree,
+  telephone: attraction.telephone,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '万代島2',
-    addressLocality: '新潟市中央区',
-    addressRegion: '新潟県',
-    addressCountry: 'JP',
+    streetAddress: attraction.streetAddress,
+    addressLocality: attraction.city,
+    addressRegion: attraction.stateProvince,
+    postalCode: attraction.postalCode,
+    addressCountry: attraction.countryCode,
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: siteConfig.coordinates.latitude,
-    longitude: siteConfig.coordinates.longitude,
+    latitude: attraction.coordinates.latitude,
+    longitude: attraction.coordinates.longitude,
   },
-  touristType: ['グルメ旅行者', '家族旅行', '一人旅'],
-  isAccessibleForFree: true,
-  image: ogImage,
+  hasMap: attraction.mapsShareUrl,
+  sameAs: [attraction.mapsShareUrl, attraction.officialSiteUrl, attraction.govtTourismUrl],
+  touristType: ['グルメ旅行者', '家族旅行', '一人旅', 'フェリー乗船客'],
+  keywords: [
+    attraction.fullName,
+    attraction.shortName,
+    ...attraction.alternateNames,
+    `${attraction.city} 市場`,
+    '新潟 海鮮',
+  ].join(', '),
 };
 const jsonLd = schema ?? defaultSchema;
 ---
-
 <!doctype html>
 <html lang={siteConfig.language}>
   <head>
@@ -58,9 +79,19 @@ const jsonLd = schema ?? defaultSchema;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="/site.webmanifest" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Icons / PWA -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="icon" href="/icons/icon-512.png" type="image/png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="application-name" content={siteConfig.shortName} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content={siteConfig.shortName} />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={siteConfig.locale} />
@@ -68,11 +99,13 @@ const jsonLd = schema ?? defaultSchema;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={resolvedOgImageAlt} />
     <meta property="og:site_name" content={siteConfig.shortName} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={resolvedOgImageAlt} />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -83,6 +116,15 @@ const jsonLd = schema ?? defaultSchema;
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', gaId, { anonymize_ip: true });
+    </script>
+
+    <!-- PWA: Service Worker 登録 -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
     </script>
   </head>
   <body>

@@ -1,0 +1,132 @@
+---
+import Icon from './Icon.astro';
+import { attraction } from '../config/site';
+
+interface SourceItem {
+  id: string;
+  label: string;
+  title: string;
+  meta: string;
+  note: string;
+  href: string;
+  linkLabel: string;
+}
+
+interface Props {
+  /** 同期・更新時期の表示（例: 2026年9月） */
+  updatedAt?: string;
+  class?: string;
+  /** ページ固有の追加出典（気象庁の平年値、公的機関の資料など） */
+  extra?: SourceItem[];
+  heading?: string;
+  lead?: string;
+}
+
+const {
+  updatedAt = attraction.rating.syncedAt,
+  class: className = '',
+  extra = [],
+  heading = '資料來源・出典',
+  lead,
+} = Astro.props;
+const { rating, fullName, shortName, officialSiteUrl, officialSiteLabel, govtTourismUrl, govtTourismLabel, cityOfficialUrl, cityOfficialLabel, mapsShareUrl } = attraction;
+const countLabel = new Intl.NumberFormat('ja-JP').format(rating.count);
+
+const sources = [
+  {
+    id: 'rating',
+    label: '評価',
+    title: `${rating.sourceName} ユーザー評価`,
+    meta: `評価 ${rating.value.toFixed(1)} / 5.0 ・ クチコミ ${countLabel} 件 ・ 同期時期 ${updatedAt}`,
+    note: 'Google マップのユーザー評価より同期。同期時期 ' + updatedAt + '。著作権は各投稿者および Google マップに帰属します。',
+    href: rating.sourceUrl,
+    linkLabel: 'Google マップで全てのクチコミを見る',
+  },
+  {
+    id: 'official',
+    label: '施設情報',
+    title: officialSiteLabel,
+    meta: `${fullName}の施設案内、店舗、営業案内`,
+    note: '施設の公式発表を一次情報として参照しています。',
+    href: officialSiteUrl,
+    linkLabel: '公式サイトを見る',
+  },
+  {
+    id: 'tourism',
+    label: '地域観光情報',
+    title: govtTourismLabel,
+    meta: 'アクセス、周辺観光、季節情報',
+    note: '新潟市の公式観光情報を参照し、周辺スポットの案内に使用しています。',
+    href: govtTourismUrl,
+    linkLabel: '観光情報を見る',
+  },
+  {
+    id: 'city',
+    label: '自治体情報',
+    title: cityOfficialLabel,
+    meta: '観光循環バス、交通、公共案内',
+    note: '運賃や運行内容など、変更されやすい情報の確認先です。',
+    href: cityOfficialUrl,
+    linkLabel: '新潟市を見る',
+  },
+  {
+    id: 'photos',
+    label: '写真',
+    title: 'Wikimedia Commons',
+    meta: '撮影者・ライセンス・原典をサイト内に掲載',
+    note: '写真の著作権は各撮影者に帰属し、各ライセンス条件に従います。',
+    href: '/credits/',
+    linkLabel: '写真クレジットを見る',
+  },
+  {
+    id: 'map',
+    label: '地図',
+    title: `${rating.sourceName}（Google Maps）`,
+    meta: '所在地、座標、経路確認',
+    note: '地図表示と位置情報の確認に使用しています。',
+    href: mapsShareUrl,
+    linkLabel: '地図を開く',
+  },
+  ...extra,
+];
+---
+
+<section class:list={['bg-paper-deep/[.55] py-16 md:py-20', className]} aria-labelledby="sources-heading" data-sources-section>
+  <div class="site-shell">
+    <div class="grid gap-8 lg:grid-cols-[.72fr_1.28fr] lg:items-start">
+      <div class="lg:sticky lg:top-28">
+        <p class="eyebrow">SOURCES &amp; TRUST</p>
+        <h2 id="sources-heading" class="section-title mt-4">{heading}</h2>
+        <p class="body-copy mt-5 text-sm">
+          {lead ?? `当サイトは${fullName}（${shortName}）の非公式ガイドです。掲載する施設情報、評価、地図、写真は、下記の公開情報を出典として整理しています。`}
+        </p>
+        <p class="mt-5 flex gap-2 text-xs leading-6 text-ink-soft">
+          <Icon name="info" size={17} class="mt-1 shrink-0 text-vermilion" />
+          営業時間、料金、運行内容などは変更される場合があります。最終判断は当日の現地表示と各運営者の案内を優先してください。
+        </p>
+        <p class="mt-5 text-[0.68rem] font-extrabold tracking-[0.12em] text-ink-soft">更新・同期時期：{updatedAt}</p>
+      </div>
+
+      <div class="grid gap-4">
+        {sources.map((source) => (
+          <article class="paper-panel flex flex-col gap-4 p-6 md:flex-row md:items-start md:justify-between md:gap-8 md:p-7">
+            <div class="min-w-0">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-vermilion">{source.label}</p>
+              <h3 class="mt-2 font-serif text-lg font-semibold leading-7">{source.title}</h3>
+              <p class="mt-2 text-xs font-bold text-ink">{source.meta}</p>
+              <p class="mt-2 text-xs leading-6 text-ink-soft">{source.note}</p>
+            </div>
+            <a
+              href={source.href}
+              class="button-quiet shrink-0"
+              {...(source.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer nofollow' } : {})}
+            >
+              {source.linkLabel}
+              <Icon name="arrow" size={15} />
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+# Cloudflare Workers（静的アセット）へアップロードしないファイルを指定する。
+# このファイルは public/ に置くことでビルド後の dist/ 直下へコピーされる。
+# 参考: Cloudflare Workers の静的アセットは、アセットディレクトリ直下の .assetsignore を参照する。
+
+# このファイル自体は配信不要
+.assetsignore
+
+# OS・エディタのメタファイル
+**/.DS_Store
+**/Thumbs.db
+**/desktop.ini
+**/*.swp
+**/.git/**
+**/.gitignore
+
+# ソースマップや開発用の中間生成物
+**/*.map
+**/*.d.ts
+**/*.tsbuildinfo
+
+# ローカル環境ファイル（万一 dist/ に混入した場合の防御）
+**/.env
+**/.env.*
+**/.dev.vars
+
+# ログ・一時ファイル
+**/*.log
+**/*.tmp
+**/*.bak
+
+# テスト・計測の出力
+**/coverage/**
+**/test-results/**
+**/playwright-report/**
+
+# ドキュメント類はサイト配信に含めない
+**/README.md
+**/CONTENT_NOTES.md
+**/VALIDATION.md
+**/CREDITS.md

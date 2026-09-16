@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import WeatherPanel from '../components/WeatherPanel.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import Icon from '../components/Icon.astro';
+import { attraction } from '../config/site';
+
+const { fullName, shortName, city, stateProvince } = attraction;
+
+const readingPoints = [
+  {
+    icon: 'wind' as const,
+    title: '冬は季節風が支配する',
+    body: '日本海側の冬は、大陸からの冷たい風が海を渡って吹きつけます。同じ「雪」でも、風が強い日は体感温度が大きく下がり、海は短時間で荒れます。天気予報の気温だけで判断せず、風速をあわせて見るのが現地の読み方です。',
+  },
+  {
+    icon: 'storm' as const,
+    title: '夏から秋は急な雨',
+    body: '暖かい季節は、午後に積乱雲が発達して短時間の強い雨が降ることがあります。年間で最も降水量が多いのは7月です。晴れていても空の変化が早いため、短い雨具を持ち歩くのが安全です。',
+  },
+  {
+    icon: 'droplet' as const,
+    title: '台風は遠くても波が届く',
+    body: '台風が南の海上にあっても、うねりだけが先に届いて海が荒れることがあります。9月は特に対応が必要な時期で、船の運航にも影響が出ます。',
+  },
+  {
+    icon: 'thermometer' as const,
+    title: '朝晩と日中の差が大きい',
+    body: '春と秋は1日の気温差が10℃を超えることがあります。港は風通しが良いため、体感はさらに下がります。重ね着で調整できる服装が最も実用的です。',
+  },
+];
+
+const weatherActions = [
+  { id: 'sunny', icon: 'sun' as const, label: '晴れ', title: '港と川を優先する', text: '景色と撮影に向く日です。開店直後に市場、昼に海鮮、午後に信濃川沿いの散歩という順番が組みやすくなります。日差しが強い時期は帽子と飲料を。' },
+  { id: 'cloudy', icon: 'cloud-sun' as const, label: 'くもり', title: '食事と買い物を厚めに', text: '暑さと寒さが緩むため、長時間の滞在に向きます。行列の状況を見て食事の順番を入れ替え、買い物をゆっくり選ぶのに適した日です。' },
+  { id: 'rainy', icon: 'rain' as const, label: '雨', title: '屋内で完結させる', text: '売り場と飲食、テラス以外の屋内スペースを中心に組み立てます。濡れた床は滑りやすく、屋外の滞在は短く区切ります。' },
+  { id: 'snowy', icon: 'snow' as const, label: '雪', title: '移動時間を長く見積もる', text: '降雪時は道路とバスの所要時間が伸びます。到着時刻を遅らせる前提で計画し、滑りにくい靴と替えの靴下を用意してください。' },
+];
+
+const disruptionNotes = [
+  { icon: 'ship' as const, title: '船の運航', text: '冬の荒天と台風接近時は欠航や遅延が発生します。乗船予定がある場合は、出発前に運航事業者の案内を確認し、代替の移動手段を用意します。' },
+  { icon: 'bus' as const, title: 'バス・道路', text: '積雪や強風で定時運行が難しくなる場合があります。朝夕の通勤時間帯も所要時間が伸びます。' },
+  { icon: 'clock' as const, title: '営業時間と売り場', text: '荒天日は入荷や営業時間が変わることがあります。営業時間は日によって変わる前提で、当日の表示を確認してください。' },
+  { icon: 'locker' as const, title: '屋外スペース', text: 'テラスや水辺は風雨の影響を直接受けます。使用可否は現地の判断によるため、屋内の滞在場所を先に確保しておきます。' },
+];
+
+const weatherSources = [
+  {
+    id: 'jma',
+    label: '気候値',
+    title: '気象庁「平年値（新潟・1991〜2020年）」',
+    meta: '月別の平均気温、降水量、降雪量、日照時間',
+    note: '本ページの平年値（30年の統計期間）は気象庁の公開値を使用しています。',
+    href: 'https://www.data.jma.go.jp/stats/etrn/index.php',
+    linkLabel: '気象庁の統計を見る',
+  },
+  {
+    id: 'forecast',
+    label: '予報',
+    title: '各国の気象機関が公開する予報データ',
+    meta: '現在の天気、時間帯ごとの降水確率、7日間の予報',
+    note: '予報は観測と数値予報モデルに基づいて更新され、時間とともに精度が高まります。こまめな再確認を前提にご利用ください。',
+    href: '/season/',
+    linkLabel: '月別の気候値を見る',
+  },
+  {
+    id: 'warning',
+    label: '警戒情報',
+    title: '気象庁 警報・注意報（新潟県）',
+    meta: '大雨、暴風、波浪、大雪などの発表状況',
+    note: '荒天時は最優先で確認する情報です。発表状況により旅程を変更してください。',
+    href: 'https://www.jma.go.jp/bosai/#area_type=offices&area_code=150000',
+    linkLabel: '警報・注意報を見る',
+  },
+];
+---
+
+<BaseLayout
+  title="天気・海況｜現在の気温と7日間の予報"
+  description={`${stateProvince}${city}・${shortName}周辺の現在の天気と7日間の予報、傘・服装・海況の判断、荒天時に変わる交通と船の情報をまとめました。${fullName}を訪れる前の確認にご利用ください。`}
+  ogImageAlt={`${city}の街と信濃川の景色`}
+>
+  <PageHero
+    eyebrow="WEATHER & SEA STATE"
+    title="天気と海況を、出発前に。"
+    lead={`${fullName}がある港は、数字だけでは分からない顔を持っています。気温や降水確率に加えて、風と波、日の出と日の入りまで見ておくと、当日の動き方が決まります。`}
+    image="/images/niigata-city-night.webp"
+    imageAlt={`${city}の市街と信濃川の景色 — ${fullName}（${shortName}）のある港町`}
+    compact
+  />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <WeatherPanel variant="full" />
+    </div>
+  </section>
+
+  <section class="bg-white/[.45] py-16 md:py-24">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="HOW TO READ"
+        title="日本海側の天気をどう読むか"
+        description="同じ気温でも、港では風と波で体感が変わります。予報を見るときの着眼点を整理しました。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+        {readingPoints.map((point) => (
+          <article class="paper-panel p-7">
+            <Icon name={point.icon} size={26} class="text-vermilion" />
+            <h3 class="mt-5 font-serif text-xl font-semibold">{point.title}</h3>
+            <p class="body-copy mt-4 text-sm">{point.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="BY WEATHER"
+        title="天気別の過ごし方"
+        description="晴れ、雨、雪で最適な動きは変わります。滞在時間を無駄にしない組み立て方をまとめました。"
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {weatherActions.map((action) => (
+          <article class="paper-panel p-6">
+            <Icon name={action.icon} size={28} class="text-harbor" />
+            <p class="mt-4 text-[0.62rem] font-extrabold tracking-[0.16em] text-vermilion">{action.label}</p>
+            <h3 class="mt-2 font-serif text-lg font-semibold leading-7">{action.title}</h3>
+            <p class="mt-3 text-xs leading-6 text-ink-soft">{action.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-paper-deep/[.6] py-16 md:py-20">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="WHEN IT TURNS"
+        title="荒天の日に変わるもの"
+        description="日本海側では、天気が悪化すると「行けない」ではなく「予定が動く」ことが起きます。先に知っておくと落ち着いて対応できます。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+        {disruptionNotes.map((note) => (
+          <div class="flex gap-4 border-t border-line pt-6">
+            <Icon name={note.icon} size={24} class="mt-1 shrink-0 text-vermilion" />
+            <div>
+              <h3 class="font-serif text-lg font-semibold">{note.title}</h3>
+              <p class="mt-3 text-sm leading-7 text-ink-soft">{note.text}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row">
+        <a href="/plan/" class="button-primary">タイプ別のプランを見る <Icon name="arrow" size={16} /></a>
+        <a href="/season/" class="button-quiet">季節ガイド（月別の気候） <Icon name="arrow" size={16} /></a>
+        <a href="/access/" class="button-quiet">交通の詳細 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="気象情報の出典"
+    lead={`当サイトは${fullName}（${shortName}）の非公式ガイドです。気候値は公的機関の統計を、予報は気象機関が公開する予報データを用い、判断の目安として整理しています。`}
+    extra={weatherSources}
+  />
+</BaseLayout>

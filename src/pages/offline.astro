@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { siteConfig, attraction } from '../config/site';
+
+const quickLinks = [
+  { label: 'トップ', href: '/' },
+  { label: '食べる', href: '/gourmet/' },
+  { label: '買う', href: '/shopping/' },
+  { label: '天気・海況', href: '/weather/' },
+  { label: '季節ガイド', href: '/season/' },
+  { label: 'アクセス', href: '/access/' },
+  { label: '施設・サービス', href: '/services/' },
+  { label: 'タイプ別プラン', href: '/plan/' },
+];
+
+const { fullName } = attraction;
+---
+
+<BaseLayout
+  title="オフライン表示"
+  description="通信ができない状態でも、保存済みのページから情報を確認できます。"
+  noindex
+>
+  <section class="section-space">
+    <div class="site-shell max-w-3xl">
+      <p class="eyebrow">OFFLINE</p>
+      <h1 class="section-title mt-4">通信がつながっていません。</h1>
+      <p class="body-copy mt-6 text-sm md:text-base">
+        保存済みのページはそのままご覧いただけます。最新の営業時間、交通、天気は通信が戻ってから確認してください。
+      </p>
+
+      <div class="paper-panel mt-10 p-7 md:p-8">
+        <h2 class="font-serif text-xl font-semibold">保存済みの主なページ</h2>
+        <div class="mt-5 grid gap-3 sm:grid-cols-2">
+          {quickLinks.map((link) => (
+            <a href={link.href} class="flex items-center justify-between border border-line bg-paper px-5 py-4 text-sm font-bold text-ink transition-colors hover:border-harbor hover:text-harbor">
+              {link.label}
+              <Icon name="arrow" size={16} />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="paper-panel mt-6 p-7 md:p-8">
+        <h2 class="font-serif text-xl font-semibold">オフライン時に控えておきたいこと</h2>
+        <ul class="mt-5 grid gap-3 text-sm leading-7 text-ink-soft">
+          <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" />営業時間は日によって変わります。通信が戻ったら当日の表示を確認してください。</li>
+          <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" />荒天時は交通と船の運航が変わります。運休の可能性を前提に行動してください。</li>
+          <li class="flex gap-2"><Icon name="check" size={17} class="mt-1 shrink-0 text-vermilion" />{fullName}までの地図は、あらかじめ読み込んでおくと移動が安定します。</li>
+        </ul>
+      </div>
+
+      <p class="mt-8 text-xs leading-6 text-ink-soft">
+        このページは{siteConfig.shortName}が提供する非公式ガイドの一部です。通信が回復したら最新の情報をご確認ください。
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import Icon from '../components/Icon.astro';
+import { attraction } from '../config/site';
+import { facilityGroups, facilityPolicy } from '../data/facilities';
+
+const { fullName, shortName, city, stateProvince } = attraction;
+
+const availabilityTone: Record<string, string> = {
+  敷地内で確認: 'bg-harbor text-white',
+  徒歩圏で確認: 'bg-gold text-harbor',
+  '市街地・事前準備': 'bg-paper-deep text-ink',
+};
+
+const seasonalChecklist = [
+  { icon: 'snow' as const, title: '降雪期の持ち物', text: '防水の靴、替えの靴下、手袋、カイロ。路面凍結に備えて滑りにくい靴底を選びます。' },
+  { icon: 'sun' as const, title: '夏の持ち物', text: '飲料、帽子、汗拭き、冷感タオル。保冷品を持ち歩く時間を短くする工夫も必要です。' },
+  { icon: 'umbrella' as const, title: '雨の日の備え', text: '折りたたみ傘と防水の袋。濡れた床は滑りやすいため、歩幅を小さくして移動します。' },
+  { icon: 'shield' as const, title: '体調管理', text: '常用薬とお薬手帳を携帯。海沿いは体感温度が下がるため、防風の上着があると安心です。' },
+];
+
+const serviceSources = [
+  {
+    id: 'official',
+    label: '施設情報',
+    title: attraction.officialSiteLabel,
+    meta: '営業時間、店舗構成、施設案内、駐車場の案内',
+    note: '設備の有無と営業時間は日によって変わります。一次情報として公式案内を確認してください。',
+    href: attraction.officialSiteUrl,
+    linkLabel: '公式サイトを見る',
+  },
+  {
+    id: 'tourism',
+    label: '観光情報',
+    title: 'にいがた観光ナビ（駐車場・営業案内）',
+    meta: '駐車台数、営業時間、定休日、周辺の見どころ',
+    note: `${fullName}の駐車台数と営業の目安は公式の観光情報でも案内されています。`,
+    href: 'https://niigata-kankou.or.jp/spot/10111',
+    linkLabel: '観光情報を見る',
+  },
+  {
+    id: 'city',
+    label: '自治体情報',
+    title: attraction.cityOfficialLabel,
+    meta: '公共交通、道路、救急・医療、ゴミの分別',
+    note: '運賃、運行内容、分別ルールなど、生活に関わる情報の確認先です。',
+    href: attraction.cityOfficialUrl,
+    linkLabel: '新潟市を見る',
+  },
+  {
+    id: 'pref',
+    label: '県の情報',
+    title: `${stateProvince}（道路・防災・環境）`,
+    meta: '冬季の道路情報、防災、環境に関する公開情報',
+    note: '降雪期の道路状況と防災情報は県の公開情報を参照しています。',
+    href: 'https://www.pref.niigata.lg.jp/',
+    linkLabel: `${stateProvince}を見る`,
+  },
+];
+---
+
+<BaseLayout
+  title="施設・サービス｜トイレ・駐車・宿泊・給油と充電"
+  description={`${stateProvince}${city}・${shortName}を訪れる前に確認したいトイレ、駐車場、ベビー設備、バリアフリー、宿泊、給油・充電、買い物の補助、緊急時の連絡先を種類ごとに整理しました。`}
+  ogImageAlt={`${fullName}（${city}）の施設エリア`}
+>
+  <PageHero
+    eyebrow="VISITOR SERVICES"
+    title="トイレも、駐車も、給油も。"
+    lead="旅先で困るのは、食事と買い物の前後にある小さな用事です。設備と周辺の機能を種類ごとに整理し、当日どこで確認すればよいかまで書きました。"
+    image="/images/pia-bandai-hero.webp"
+    imageAlt={`${fullName}の施設エリア — ${city}の港に面した市場`}
+    compact
+  />
+
+  <section class="section-space pb-0 md:pb-0">
+    <div class="site-shell">
+      <div class="paper-panel flex flex-col gap-5 p-7 md:flex-row md:items-start md:gap-8 md:p-8">
+        <Icon name="info" size={26} class="mt-1 shrink-0 text-vermilion" />
+        <div>
+          <h2 class="font-serif text-xl font-semibold">{facilityPolicy.title}</h2>
+          <p class="body-copy mt-4 text-sm">{facilityPolicy.body}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {facilityGroups.map((group, index) => (
+    <section class:list={['section-space', index % 2 === 1 ? 'bg-white/[.45]' : '']}>
+      <div class="site-shell">
+        <SectionTitle eyebrow={group.label.toUpperCase()} title={group.title} description={group.lead} />
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          {group.items.map((item) => (
+            <article class="paper-panel flex h-full flex-col p-7">
+              <div class="flex items-start justify-between gap-4">
+                <Icon name={item.icon} size={26} class="text-vermilion" />
+                <span class:list={['px-3 py-1 text-[0.6rem] font-extrabold tracking-[0.1em]', availabilityTone[item.availability] ?? 'bg-paper-deep text-ink']}>{item.availability}</span>
+              </div>
+              <h3 class="mt-5 font-serif text-xl font-semibold leading-8">{item.title}</h3>
+              <p class="body-copy mt-4 text-sm">{item.summary}</p>
+              <ul class="mt-5 grid gap-3 border-t border-line pt-5">
+                {item.points.map((point) => (
+                  <li class="flex gap-2 text-xs leading-6 text-ink-soft"><Icon name="check" size={15} class="mt-1 shrink-0 text-harbor" />{point}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="bg-paper-deep/[.6] py-16 md:py-20">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="SEASONAL KIT"
+        title="季節ごとに足すもの"
+        description="港の設備は通年で変わりませんが、必要な装備は季節で変わります。"
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {seasonalChecklist.map((item) => (
+          <article class="paper-panel p-6">
+            <Icon name={item.icon} size={26} class="text-harbor" />
+            <h3 class="mt-4 font-serif text-lg font-semibold">{item.title}</h3>
+            <p class="mt-3 text-xs leading-6 text-ink-soft">{item.text}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row">
+        <a href="/access/" class="button-primary">交通の詳細を見る <Icon name="arrow" size={16} /></a>
+        <a href="/weather/" class="button-quiet">天気と海況 <Icon name="arrow" size={16} /></a>
+        <a href="/hours/" class="button-quiet">営業時間の確認ポイント <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="施設情報の出典"
+    lead={`当サイトは${fullName}（${shortName}）の非公式ガイドです。設備とサービスに関する記述は、施設の公式案内と行政・公式観光情報の公開内容を出典として整理しています。`}
+    extra={serviceSources}
+  />
+</BaseLayout>

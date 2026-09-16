@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import Icon from '../components/Icon.astro';
+import { attraction } from '../config/site';
+import { timeline, originNotes, scienceTopics, visitorResponsibilities, heritageSources } from '../data/heritage';
+
+const { fullName, shortName, city, stateProvince } = attraction;
+
+const kindTone: Record<string, string> = {
+  史実: 'bg-harbor text-white',
+  通説: 'bg-gold text-harbor',
+  近現代: 'bg-paper-deep text-ink',
+};
+
+const tagTone: Record<string, string> = {
+  地名: 'border-vermilion text-vermilion',
+  名称: 'border-harbor text-harbor',
+  由来: 'border-gold text-ink',
+  伝承: 'border-line text-ink-soft',
+};
+
+/** heritageSources は label/href のみ持つため、出典カードの形に整える */
+const heritageSourceItems = heritageSources.map((source, index) => ({
+  id: `heritage-${index}`,
+  label: '歴史・由来',
+  title: source.label,
+  meta: '歴史・由来・自然に関する公開資料',
+  note: '年表と由来の記述は、公的機関と公式観光情報で確認できる範囲に限定し、伝承については「伝えられる」と明示しています。',
+  href: source.href,
+  linkLabel: '資料を見る',
+}));
+
+const readingGuides = [
+  {
+    icon: 'book' as const,
+    title: '史実と伝承を分けて読む',
+    text: '年表には、公的資料で確認できる事実と、地域で語り継がれてきた説が混在しています。本ページでは両者を色分けし、断定的に扱わないようにしています。',
+  },
+  {
+    icon: 'ship-wheel' as const,
+    title: '港の歴史は川と海の歴史',
+    text: '新潟の湊は、信濃川の舟運と日本海の廻船が交わる場所として発達しました。物流の動線がそのまま、現在の市街地と万代島の形につながっています。',
+  },
+  {
+    icon: 'sparkle' as const,
+    title: '名前を知ると景色が変わる',
+    text: '「万代」という地名が橋に由来すること、「ピア」が桟橋を意味することを知ってから歩くと、港の並びの意味が見え方が変わります。',
+  },
+];
+---
+
+<BaseLayout
+  title="歴史・伝承｜港と萬代橋、名前の由来"
+  description={`${stateProvince}${city}・${fullName}（${shortName}）周辺の歴史を年表で整理。萬代橋と新潟港のあゆみ、地名と名称の由来、河口部の自然、訪れる人が守りたいマナーまでをまとめました。`}
+  ogImageAlt={`${attraction.nearbyLandmarks[1].name} — ${city}の信濃川に架かる橋`}
+>
+  <PageHero
+    eyebrow="HISTORY & LORE"
+    title="港の記憶を、たどる。"
+    lead="万代島という名前、橋の名、水辺の生きもの。目の前の景色は、川と海と人の仕事が積み重なった結果です。確認できる事実と、語り継がれてきた説を分けて並べました。"
+    image="/images/bandai-bridge.webp"
+    imageAlt={`${attraction.nearbyLandmarks[1].name} — ${city}の信濃川に架かる橋と市街`}
+    compact
+  />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-6 md:grid-cols-3">
+        {readingGuides.map((guide) => (
+          <article class="paper-panel p-7">
+            <Icon name={guide.icon} size={26} class="text-vermilion" />
+            <h2 class="mt-5 font-serif text-xl font-semibold leading-8">{guide.title}</h2>
+            <p class="body-copy mt-4 text-sm">{guide.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white/[.45] py-16 md:py-24" id="timeline">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="TIMELINE"
+        title="湊から港へ、年表でたどる。"
+        description="古代の湊の記録から、近代の開港、萬代橋の架け替え、震災と復旧、現在の食の拠点まで。区分の色で、確認できる史実と語り継がれてきた説を区別しています。"
+      />
+
+      <div class="mt-10 flex flex-wrap gap-3 text-[0.65rem] font-extrabold tracking-[0.1em]">
+        <span class="bg-harbor px-3 py-1.5 text-white">史実＝公的資料で確認できる出来事</span>
+        <span class="bg-gold px-3 py-1.5 text-harbor">通説＝広く紹介される説</span>
+        <span class="bg-paper-deep px-3 py-1.5 text-ink">近現代＝現在につながる整備</span>
+      </div>
+
+      <ol class="mt-12 grid gap-0 border-l border-line pl-6 md:pl-10">
+        {timeline.map((item) => (
+          <li class="relative pb-10 last:pb-0">
+            <span class="absolute -left-[31px] top-2 h-3.5 w-3.5 rounded-full border-2 border-paper bg-vermilion md:-left-[47px]"></span>
+            <div class="paper-panel p-6 md:p-7">
+              <div class="flex flex-wrap items-center gap-3">
+                <p class="font-serif text-lg font-semibold text-harbor">{item.year}</p>
+                <span class:list={['px-2.5 py-1 text-[0.58rem] font-extrabold tracking-[0.12em]', kindTone[item.kind] ?? 'bg-paper-deep text-ink']}>{item.kind}</span>
+              </div>
+              <h3 class="mt-3 font-serif text-xl font-semibold leading-8">{item.title}</h3>
+              <p class="body-copy mt-3 text-sm">{item.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <p class="mt-8 text-[0.7rem] leading-6 text-ink-soft">
+        年表は公開資料に基づく編集です。年代の細部や施設の沿革は、公式サイトおよび公的機関の案内でご確認ください。
+      </p>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="PLACE NAMES"
+        title="地名と名前に、理由がある。"
+        description="「万代」「ピア」「にぎわいマルシェ」。呼び名の由来を知ると、住所の一行と景色の関係が見えてきます。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+        {originNotes.map((note) => (
+          <article class="paper-panel flex h-full flex-col p-7">
+            <span class:list={['self-start border px-3 py-1 text-[0.58rem] font-extrabold tracking-[0.14em]', tagTone[note.tag] ?? 'border-line text-ink-soft']}>{note.tag}</span>
+            <h3 class="mt-5 font-serif text-xl font-semibold leading-8">{note.title}</h3>
+            <p class="body-copy mt-4 text-sm">{note.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-paper-deep/[.6] py-16 md:py-24">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="SCIENCE OF THE PORT"
+        title="港と自然を、理科で読む。"
+        description="河口部の水、季節風と波、魚の移動、鳥の渡り。景色の裏側にある仕組みを知ると、同じ港でも見えるものが増えます。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {scienceTopics.map((topic) => (
+          <article class="paper-panel flex h-full flex-col p-7">
+            <Icon name={topic.icon} size={26} class="text-harbor" />
+            <h3 class="mt-5 font-serif text-lg font-semibold leading-7">{topic.title}</h3>
+            <p class="mt-4 text-xs leading-6 text-ink-soft">{topic.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row">
+        <a href="/season/" class="button-primary">季節ごとの変化を見る <Icon name="arrow" size={16} /></a>
+        <a href="/weather/" class="button-quiet">天気と海況 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="VISITOR RESPONSIBILITY"
+        title="気持ちよく使うために、守りたいこと。"
+        description="港と市場は、観光の場であると同時に働く場所であり、生活の場でもあります。特別なことではなく、普段どおりの配慮の話です。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {visitorResponsibilities.map((item) => (
+          <article class="flex gap-4 border-t border-line pt-6">
+            <Icon name={item.icon} size={24} class="mt-1 shrink-0 text-vermilion" />
+            <div>
+              <h3 class="font-serif text-lg font-semibold">{item.title}</h3>
+              <p class="mt-3 text-xs leading-6 text-ink-soft">{item.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row">
+        <a href="/course/" class="button-primary">モデルコースで実際に歩く <Icon name="arrow" size={16} /></a>
+        <a href="/services/" class="button-quiet">施設とサービス <Icon name="arrow" size={16} /></a>
+        <a href="/about/" class="button-quiet">サイトの考え方 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="歴史・由来の出典"
+    lead={`当サイトは${fullName}（${shortName}）の非公式ガイドです。歴史と由来に関する記述は、公的機関および公式観光情報の公開内容を出典とし、確認できない細部は断定を避けて記述しています。`}
+    extra={heritageSourceItems}
+  />
+</BaseLayout>

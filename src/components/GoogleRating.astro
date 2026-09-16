@@ -1,0 +1,86 @@
+---
+import Icon from './Icon.astro';
+import { attraction } from '../config/site';
+
+interface Props {
+  /** band: ヒーロー直下の横帯 / card: パネル表示 */
+  variant?: 'band' | 'card';
+  class?: string;
+}
+
+const { variant = 'band', class: className = '' } = Astro.props;
+const { rating, fullName, shortName, categoryLabel, city } = attraction;
+
+const countLabel = new Intl.NumberFormat('ja-JP').format(rating.count);
+const valueLabel = rating.value.toFixed(1);
+const fullStars = Math.floor(rating.value);
+const hasHalf = rating.value - fullStars >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
+
+const ariaLabel = `${fullName}のGoogle マップ評価は5点満点中${valueLabel}、クチコミ${countLabel}件（${rating.syncedAt}時点の同期値）`;
+---
+
+<div class:list={['paper-panel overflow-hidden', className]} data-google-rating>
+  <div class="awning-stripe h-1.5"></div>
+
+  <div class:list={[variant === 'band' ? 'grid gap-6 p-6 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-10 md:p-7' : 'grid gap-6 p-7 md:p-9']}>
+    <div class="flex items-center gap-5">
+      <div class="text-center">
+        <p class="font-serif text-[3.2rem] font-semibold leading-none text-harbor">{valueLabel}</p>
+        <p class="mt-1 text-[0.6rem] font-extrabold tracking-[0.14em] text-ink-soft">/ 5.0</p>
+      </div>
+      <div>
+        <div class="flex items-center gap-1 text-gold" role="img" aria-label={ariaLabel}>
+          {Array.from({ length: fullStars }).map(() => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.4 2.9 6.1 6.6.9-4.8 4.7 1.2 6.6L12 17.6 6.1 20.7l1.2-6.6L2.5 9.4l6.6-.9L12 2.4Z"/></svg>
+          ))}
+          {hasHalf && (
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <defs><linearGradient id="half-star-grad"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>
+              <path d="m12 2.4 2.9 6.1 6.6.9-4.8 4.7 1.2 6.6L12 17.6 6.1 20.7l1.2-6.6L2.5 9.4l6.6-.9L12 2.4Z" fill="url(#half-star-grad)" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          )}
+          {Array.from({ length: emptyStars }).map(() => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="m12 2.4 2.9 6.1 6.6.9-4.8 4.7 1.2 6.6L12 17.6 6.1 20.7l1.2-6.6L2.5 9.4l6.6-.9L12 2.4Z"/></svg>
+          ))}
+        </div>
+        <p class="mt-2 text-sm font-bold text-ink"><span class="font-serif text-lg">{countLabel}</span> 件のクチコミ</p>
+        <p class="mt-1 text-[0.68rem] font-bold tracking-[0.06em] text-ink-soft">{categoryLabel} · {city}</p>
+      </div>
+    </div>
+
+    <div class="border-line md:border-l md:pl-9">
+      <p class="text-[0.72rem] leading-6 text-ink-soft">
+        評価とクチコミ数は Google マップ（Google Maps）のユーザー評価を同期 ・ {rating.syncedAt} ・{' '}
+        <a
+          href={rating.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="font-bold text-harbor underline decoration-line underline-offset-4 transition-colors hover:text-vermilion"
+        >
+          Google マップですべてのクチコミを見る↗
+        </a>
+      </p>
+      {variant === 'card' && (
+        <p class="mt-2 text-[0.68rem] leading-6 text-ink-soft">
+          Google マップのユーザー評価より同期。同期時期 {rating.syncedAt}。著作権は各投稿者および Google マップに帰属します。
+        </p>
+      )}
+    </div>
+
+    <div class:list={[variant === 'band' ? 'md:justify-self-end' : '']}>
+      <a
+        href={rating.sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        class="button-primary w-full justify-center md:w-auto"
+      >
+        Google マップで全てのクチコミを見る
+        <Icon name="arrow" size={16} />
+      </a>
+      <p class="mt-3 text-[0.64rem] leading-5 text-ink-soft">
+        {shortName}（{fullName}）· {rating.sourceName}のユーザー投稿に基づく参考値です。内容は日々変動します。
+      </p>
+    </div>
+  </div>
+</div>

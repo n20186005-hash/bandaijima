@@ -1,0 +1,273 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import Icon from '../components/Icon.astro';
+import { attraction } from '../config/site';
+import { seasonMonths, seasonBlocks, packingNotes } from '../data/season';
+
+const { fullName, shortName, city, stateProvince } = attraction;
+const buildMonth = new Date().getMonth() + 1;
+const currentMonth = seasonMonths[buildMonth - 1];
+
+const fishCalendar = seasonMonths.map((month) => ({
+  month: month.month,
+  label: month.label,
+  fish: month.fish,
+}));
+
+const summaryRows = [
+  { label: '年間平均気温', value: '13.9℃', note: '1月が最も低く、8月が最も高い' },
+  { label: '年間降水量', value: '1,845.9mm', note: '7月と11〜12月に多い' },
+  { label: '年間降雪量', value: '139cm', note: '1月と2月に集中する' },
+  { label: '日照時間の最少月', value: '1月（56.4時間）', note: '8月は205.2時間で最も長い' },
+];
+
+const seasonSources = [
+  {
+    id: 'jma',
+    label: '気候値',
+    title: '気象庁「平年値（新潟・1991〜2020年）」',
+    meta: '30年の統計期間による月別の気温、降水量、降雪量、日照時間',
+    note: '本ページの気候値はすべて気象庁の平年値を使用しています。数値は30年平均で、特定の年の値ではありません。',
+    href: 'https://www.data.jma.go.jp/stats/etrn/index.php',
+    linkLabel: '気象庁の統計を見る',
+  },
+  {
+    id: 'water',
+    label: '海況・水質',
+    title: `${stateProvince}（環境・水質の公開情報）`,
+    meta: '公共用水域の水質、海の環境に関する公開資料',
+    note: '水辺の環境と水質に関する記述は、行政が公開する測定結果の考え方を参照しています。',
+    href: 'https://www.pref.niigata.lg.jp/',
+    linkLabel: `${stateProvince}を見る`,
+  },
+  {
+    id: 'fish-info',
+    label: '水産',
+    title: '旬の魚介と水揚げに関する公開情報',
+    meta: '季節ごとの魚種と、旬の時期の目安',
+    note: '魚介の旬は海水温と回遊で決まります。実際の水揚げは海況と漁の状況により変動します。',
+    href: 'https://niigata-kankou.or.jp/spot/10111',
+    linkLabel: '観光情報を見る',
+  },
+];
+---
+
+<BaseLayout
+  title="季節ガイド｜月別の気候・海況・旬の魚"
+  description={`${stateProvince}${city}・${shortName}周辺の12か月を、気象庁の平年値（1991〜2020年）に基づく気温・降水量・降雪と、海況・混雑・旬の魚の目安で整理しました。${fullName}を訪れる季節選びにご利用ください。`}
+  ogImageAlt={`${stateProvince}${city}の風景 — ${fullName}の季節ガイド`}
+>
+  <PageHero
+    eyebrow="SEASON GUIDE"
+    title="12か月の、港の表情。"
+    lead="同じ市場でも、並ぶ魚も、混み方も、歩きやすさも月ごとに変わります。気象庁の平年値（1991〜2020年・30年）を軸に、海況・混雑・旬の魚の目安を一枚にまとめました。"
+    image="/images/whats-niigata.webp"
+    imageAlt={`${stateProvince}${city}の風景 — ${fullName}（${shortName}）の季節ガイド`}
+    compact
+  />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {summaryRows.map((row) => (
+          <div class="paper-panel p-6">
+            <p class="text-[0.62rem] font-extrabold tracking-[0.14em] text-ink-soft">{row.label}</p>
+            <p class="mt-3 font-serif text-2xl font-semibold text-harbor">{row.value}</p>
+            <p class="mt-2 text-xs leading-6 text-ink-soft">{row.note}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-6 text-[0.7rem] leading-6 text-ink-soft">
+        気候値は気象庁「平年値（新潟・1991〜2020年）」による30年平均です。海況・混雑・旬の魚介は公開情報に基づく編集上の目安で、実際の状況は日ごとに変動します。
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-white/[.45] py-16 md:py-24">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="SEASON BY SEASON"
+        title="四季の性格をつかむ"
+        description="まず季節の大づかみから。気温と海況、混雑の傾向を押さえると、旅程の組み方が決まります。"
+      />
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+        {seasonBlocks.map((block) => (
+          <article class="paper-panel p-7 md:p-8">
+            <div class="flex items-baseline justify-between gap-4">
+              <h3 class="font-serif text-2xl font-semibold">{block.label}</h3>
+              <p class="text-[0.68rem] font-extrabold tracking-[0.12em] text-ink-soft">{block.months}</p>
+            </div>
+            <p class="mt-4 font-serif text-lg text-vermilion">{block.headline}</p>
+            <p class="body-copy mt-4 text-sm">{block.body}</p>
+            <p class="mt-5 border-t border-line pt-4 text-[0.68rem] font-extrabold tracking-[0.1em] text-ink-soft">向く過ごし方：{block.bestFor}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space" id="monthly">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="MONTHLY MATRIX"
+        title="月別の訪問戦略"
+        description="気温と降水量は30年平均の平年値、海況・混雑・旬の魚介・訪問適期は編集上の目安です。横にスクロールして月ごとに比較できます。"
+      />
+
+      <div class="mt-10 overflow-x-auto border border-line bg-paper">
+        <table class="w-full min-w-[1080px] border-collapse text-left text-xs">
+          <caption class="sr-only">{fullName}周辺の月別気候値と訪問の目安</caption>
+          <thead>
+            <tr class="bg-harbor text-white">
+              <th scope="col" class="sticky left-0 z-10 bg-harbor px-4 py-4 font-extrabold">月</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">平均気温</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">平均最高／最低</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">降水量</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">降雪量</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">日照</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">海況</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">混雑</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">旬の魚介</th>
+              <th scope="col" class="px-4 py-4 font-extrabold">訪問適期</th>
+            </tr>
+          </thead>
+          <tbody>
+            {seasonMonths.map((month) => (
+              <tr class:list={['border-t border-line align-top', month.month === buildMonth ? 'bg-vermilion/[.07]' : '']} data-month={month.month}>
+                <th scope="row" class:list={['sticky left-0 z-10 whitespace-nowrap px-4 py-5 font-serif text-base font-semibold', month.month === buildMonth ? 'bg-[#f7ece7] text-vermilion' : 'bg-paper']}>
+                  {month.label}
+                  {month.month === buildMonth && <span class="ml-2 text-[0.6rem] font-extrabold tracking-[0.1em]">今月</span>}
+                </th>
+                <td class="px-4 py-5 font-serif text-base">{month.normal.temp.toFixed(1)}℃</td>
+                <td class="px-4 py-5 text-ink-soft">{month.normal.tmax.toFixed(1)}℃ ／ {month.normal.tmin.toFixed(1)}℃</td>
+                <td class="px-4 py-5 text-ink-soft">{month.normal.precip.toFixed(1)}mm</td>
+                <td class="px-4 py-5 text-ink-soft">{month.normal.snowfall > 0 ? `${month.normal.snowfall}cm` : '—'}</td>
+                <td class="px-4 py-5 text-ink-soft">{month.normal.sunlight.toFixed(1)}h</td>
+                <td class="px-4 py-5">
+                  <span class="flex gap-1" aria-hidden="true">
+                    {[1, 2, 3].map((step) => (
+                      <span class:list={['h-1.5 w-4', step <= month.sea.level ? 'bg-harbor' : 'bg-line']}></span>
+                    ))}
+                  </span>
+                  <span class="mt-2 block font-bold">{month.sea.label}</span>
+                </td>
+                <td class="px-4 py-5">
+                  <span class="flex gap-1" aria-hidden="true">
+                    {[1, 2, 3, 4].map((step) => (
+                      <span class:list={['h-1.5 w-3', step <= month.crowd.level ? 'bg-vermilion' : 'bg-line']}></span>
+                    ))}
+                  </span>
+                  <span class="mt-2 block font-bold">{month.crowd.label}</span>
+                </td>
+                <td class="px-4 py-5">
+                  <span class="flex flex-wrap gap-1">
+                    {month.fish.map((item) => (
+                      <span class="border border-line bg-paper-deep/[.5] px-2 py-1 text-[0.65rem]">{item}</span>
+                    ))}
+                  </span>
+                </td>
+                <td class="px-4 py-5">
+                  <span class="flex gap-1" aria-hidden="true">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <span class:list={['h-1.5 w-3', step <= month.score ? 'bg-gold' : 'bg-line']}></span>
+                    ))}
+                  </span>
+                  <span class="mt-2 block text-ink-soft">{month.score} / 5</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-[0.68rem] leading-6 text-ink-soft">
+        横スクロールで全項目を表示できます（最小幅1080px）。気候値は気象庁の平年値、それ以外は公開情報に基づく目安です。
+      </p>
+    </div>
+
+    <script is:inline>
+      (function () {
+        var rows = document.querySelectorAll('[data-month]');
+        if (!rows.length) return;
+        var month = new Date().getMonth() + 1;
+        if (month === 0) return;
+        var target = document.querySelector('[data-month="' + month + '"]');
+        if (target) target.setAttribute('data-current', 'true');
+      })();
+    </script>
+  </section>
+
+  <section class="bg-paper-deep/[.6] py-16 md:py-24">
+    <div class="site-shell">
+      <div class="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:items-start">
+        <div>
+          <SectionTitle
+            eyebrow="THIS MONTH"
+            title={`${currentMonth.label}のポイント`}
+            description={`平年値では平均${currentMonth.normal.temp.toFixed(1)}℃、降水量は月合計${currentMonth.normal.precip.toFixed(1)}mm。海は「${currentMonth.sea.label}」、混雑は「${currentMonth.crowd.label}」の水準が目安です。`}
+          />
+          <div class="mt-8 grid gap-3">
+            <p class="flex gap-3 text-sm leading-7"><Icon name="check" size={18} class="mt-1 shrink-0 text-vermilion" />{currentMonth.sea.note}</p>
+            <p class="flex gap-3 text-sm leading-7"><Icon name="check" size={18} class="mt-1 shrink-0 text-vermilion" />{currentMonth.crowd.note}</p>
+            <p class="flex gap-3 text-sm leading-7"><Icon name="check" size={18} class="mt-1 shrink-0 text-vermilion" />{currentMonth.tip}</p>
+          </div>
+          <div class="mt-8 paper-panel p-6">
+            <p class="text-[0.62rem] font-extrabold tracking-[0.14em] text-ink-soft">服装の目安</p>
+            <p class="mt-3 text-sm leading-7 text-ink">{currentMonth.clothing}</p>
+            <p class="mt-4 border-t border-line pt-4 text-[0.68rem] leading-6 text-ink-soft">旬の農産物・加工品：{currentMonth.produce.join('、')}</p>
+          </div>
+          <a href="/weather/" class="button-primary mt-7">現在の天気と海況を見る <Icon name="arrow" size={16} /></a>
+        </div>
+
+        <div>
+          <h3 class="font-serif text-2xl font-semibold">旬の魚介カレンダー</h3>
+          <p class="body-copy mt-4 text-sm">海水温の変化に合わせて、水揚げされる魚は入れ替わります。実際の入荷は海況と漁の状況で変わります。</p>
+          <div class="mt-8 grid gap-3 sm:grid-cols-2">
+            {fishCalendar.map((month) => (
+              <div class:list={['border p-4', month.month === buildMonth ? 'border-vermilion bg-vermilion/[.06]' : 'border-line bg-paper']}>
+                <p class="text-[0.7rem] font-extrabold tracking-[0.12em] text-vermilion">{month.label}</p>
+                <p class="mt-2 text-[0.72rem] leading-6 text-ink-soft">{month.fish.join('・')}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="WHAT TO PACK"
+        title="季節ごとの持ち物"
+        description="港は風通しが良く、体感温度が予報より下がることがあります。季節に合わせた装備をまとめました。"
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {packingNotes.map((note) => (
+          <article class="paper-panel p-6">
+            <p class="font-serif text-xl font-semibold">{note.season}</p>
+            <ul class="mt-4 grid gap-2">
+              {note.items.map((item) => (
+                <li class="flex gap-2 text-xs leading-6 text-ink-soft"><Icon name="check" size={15} class="mt-1 shrink-0 text-vermilion" />{item}</li>
+              ))}
+            </ul>
+            <p class="mt-4 border-t border-line pt-4 text-[0.68rem] leading-6 text-ink-soft">{note.note}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt-12 flex flex-col gap-4 sm:flex-row">
+        <a href="/plan/" class="button-primary">タイプ別のプランを見る <Icon name="arrow" size={16} /></a>
+        <a href="/gourmet/" class="button-quiet">食べる（選び方） <Icon name="arrow" size={16} /></a>
+        <a href="/access/" class="button-quiet">アクセスの詳細 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="季節データの出典"
+    lead={`当サイトは${fullName}（${shortName}）の非公式ガイドです。気候値は気象庁の30年平均の平年値を、海況・水質・水産に関する記述は行政と公式観光情報の公開資料を出典として整理しています。`}
+    extra={seasonSources}
+  />
+</BaseLayout>

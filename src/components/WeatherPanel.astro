@@ -1,0 +1,335 @@
+---
+import Icon from './Icon.astro';
+import { weatherConfig } from '../config/site';
+import {
+  getWeather,
+  selectHourSlots,
+  weatherIcon,
+  weatherLabel,
+  windDirectionLabel,
+  formatUpdatedAt,
+} from '../lib/weather';
+import { buildWeatherAdvice, renderAdviceHtml, toAdviceFact, uvLabel } from '../lib/weatherAdvice';
+import { seasonMonths } from '../data/season';
+
+interface Props {
+  variant?: 'full' | 'compact';
+  class?: string;
+}
+
+const { variant = 'full', class: className = '' } = Astro.props;
+
+const { data, stale } = await getWeather();
+const pointLabel = weatherConfig.pointLabel;
+const sprite = `wx-${variant}`;
+
+const today = data?.days[0];
+const hourSlots = data ? selectHourSlots(data, variant === 'compact' ? 8 : 12) : [];
+const forecastDays = data?.days.slice(0, variant === 'compact' ? 3 : 7) ?? [];
+const monthIndex = today ? new Date(`${today.date}T00:00:00`).getMonth() : new Date().getMonth();
+const monthNormal = seasonMonths[monthIndex];
+const monthLabel = `${monthIndex + 1}月`;
+
+/** 観測値から組み立てた提案。初期描画と画面更新で同じ結果になる。 */
+const advice = data ? buildWeatherAdvice(toAdviceFact(data)) : null;
+const adviceHtml = advice ? renderAdviceHtml(advice) : null;
+---
+
+<section class:list={['weather-panel', className]} data-wx-root data-wx-sprite={sprite} data-wx-refresh={weatherConfig.refreshMinutes}>
+  <svg class="hidden" aria-hidden="true" focusable="false">
+    <symbol id={`${sprite}-sun`} viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" /></symbol>
+    <symbol id={`${sprite}-cloud-sun`} viewBox="0 0 24 24"><circle cx="8" cy="8" r="3" /><path d="M8 2v1.5M2 8h1.5M4 4l1 1M12 4l-1 1" /><path d="M9 19h8a3.2 3.2 0 0 0 .3-6.4A4.6 4.6 0 0 0 8.6 14 3.1 3.1 0 0 0 9 19Z" /></symbol>
+    <symbol id={`${sprite}-cloud`} viewBox="0 0 24 24"><path d="M7 18h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.2A3.4 3.4 0 0 0 7 18Z" /></symbol>
+    <symbol id={`${sprite}-fog`} viewBox="0 0 24 24"><path d="M6 10h11a3 3 0 0 0 0-6H9a3 3 0 0 0-3 3" /><path d="M4 14h16M6 18h12" /></symbol>
+    <symbol id={`${sprite}-rain`} viewBox="0 0 24 24"><path d="M7 15h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.2A3.4 3.4 0 0 0 7 15Z" /><path d="M9 18.5 8 21m4-2.5L11 21m4-2.5L14 21" /></symbol>
+    <symbol id={`${sprite}-snow`} viewBox="0 0 24 24"><path d="M7 14h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.2A3.4 3.4 0 0 0 7 14Z" /><path d="M8 18h.01M12 21h.01M16 18h.01" /></symbol>
+    <symbol id={`${sprite}-storm`} viewBox="0 0 24 24"><path d="M7 14h9.5a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.2A3.4 3.4 0 0 0 7 14Z" /><path d="m12.5 16-2 4h3l-2 3.5" /></symbol>
+  </svg>
+
+  {!data ? (
+    <div class="paper-panel p-7 md:p-9">
+      <p class="eyebrow">WEATHER &amp; SEA</p>
+      <h2 class="section-title mt-4">現在の天気を取得できませんでした</h2>
+      <p class="body-copy mt-5 text-sm">通信状況により観測値の取得に失敗しています。下記の平年値（1991〜2020年）を目安に、当日の空模様と現地の案内をあわせて確認してください。</p>
+      <div class="mt-7 grid gap-4 sm:grid-cols-3">
+        <div class="paper-panel p-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">{monthLabel}の平年値</p><p class="mt-2 font-serif text-2xl">{monthNormal.normal.temp.toFixed(1)}<span class="text-sm">℃</span></p><p class="mt-1 text-xs text-ink-soft">平均気温</p></div>
+        <div class="paper-panel p-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">{monthLabel}の平年値</p><p class="mt-2 font-serif text-2xl">{monthNormal.normal.tmax.toFixed(1)}<span class="text-sm">℃</span></p><p class="mt-1 text-xs text-ink-soft">平均最高気温</p></div>
+        <div class="paper-panel p-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">{monthLabel}の平年値</p><p class="mt-2 font-serif text-2xl">{monthNormal.normal.precip.toFixed(1)}<span class="text-sm">mm</span></p><p class="mt-1 text-xs text-ink-soft">降水量の月合計</p></div>
+      </div>
+      <a href="/season/" class="button-primary mt-7">月別の気候と海況を見る <Icon name="arrow" size={16} /></a>
+    </div>
+  ) : (
+    <>
+      <div class="paper-panel overflow-hidden">
+        <div class="awning-stripe h-1.5"></div>
+        <div class:list={['grid gap-8 p-7 md:p-9', variant === 'full' ? 'lg:grid-cols-[1.05fr_1fr]' : 'md:grid-cols-[1fr_1.1fr] md:items-center']}>
+          <div>
+            <div class="flex items-center justify-between gap-4">
+              <p class="eyebrow">{pointLabel}の現在</p>
+              <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft" data-wx="updated">{formatUpdatedAt(data.fetchedAt)} 時点</p>
+            </div>
+            <div class="mt-5 flex items-end gap-6">
+              <div class="text-harbor">
+                <svg width={variant === 'full' ? 74 : 58} height={variant === 'full' ? 74 : 58} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <use data-wx-use href={`#${sprite}-${weatherIcon(data.current.code)}`} />
+                </svg>
+              </div>
+              <div>
+                <p class="font-serif text-[3.6rem] font-semibold leading-none text-harbor"><span data-wx="temp">{data.current.temp.toFixed(1)}</span><span class="text-xl align-top">℃</span></p>
+                <p class="mt-2 text-sm font-extrabold text-ink" data-wx="label">{weatherLabel(data.current.code)}</p>
+              </div>
+            </div>
+            <p class="mt-4 text-xs leading-6 text-ink-soft">
+              体感 <span class="font-bold text-ink" data-wx="feels">{data.current.feels.toFixed(1)}℃</span> ／ 湿度 <span class="font-bold text-ink" data-wx="humidity">{data.current.humidity}%</span> ／ 風 <span class="font-bold text-ink" data-wx="wind">{windDirectionLabel(data.current.windDir)} {data.current.wind.toFixed(1)}m/s</span> ／ 降水 <span class="font-bold text-ink" data-wx="precip">{data.current.precip.toFixed(1)}mm</span>
+            </p>
+            <p class="mt-3 border-l-2 border-harbor pl-3 text-[0.73rem] font-bold leading-6 text-harbor" data-wx="headline">{advice?.headline}</p>
+            {stale && <p class="mt-4 border-l-2 border-vermilion pl-3 text-[0.7rem] leading-6 text-ink-soft">最新の観測値を取得できなかったため、直近に取得した値を表示しています。</p>}
+          </div>
+
+          <div class="grid gap-3 self-start sm:grid-cols-2">
+            <div class="border border-line bg-paper-deep/[.42] p-4">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">今日の降水確率</p>
+              <p class="mt-1.5 font-serif text-2xl text-harbor"><span data-wx="pop">{today?.pop ?? 0}</span><span class="text-sm">%</span></p>
+            </div>
+            <div class="border border-line bg-paper-deep/[.42] p-4">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">紫外線の強さ</p>
+              <p class="mt-1.5 font-serif text-2xl text-harbor" data-wx="uv">{today ? uvLabel(today.uvMax) || '弱い' : '—'}</p>
+            </div>
+            <div class="border border-line bg-paper-deep/[.42] p-4">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">風（最大／瞬間）</p>
+              <p class="mt-1.5 font-serif text-xl text-harbor"><span data-wx="windmax">{today?.wind.toFixed(1) ?? '—'}</span> ／ <span data-wx="gustmax">{today?.gust.toFixed(1) ?? '—'}</span><span class="text-sm">m/s</span></p>
+            </div>
+            <div class="border border-line bg-paper-deep/[.42] p-4" data-wx="sea-cell" hidden={!data.sea}>
+              <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">波の高さ／海水温</p>
+              <p class="mt-1.5 font-serif text-xl text-harbor"><span data-wx="wave">{data.sea?.waveMax?.toFixed(1) ?? '—'}</span>m ／ <span data-wx="sst">{data.sea?.sst?.toFixed(0) ?? '—'}</span>℃</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-px border-t border-line bg-line sm:grid-cols-3">
+          <div class="bg-paper px-7 py-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">日の出</p><p class="mt-1 flex items-center gap-2 font-serif text-lg"><Icon name="sunrise" size={18} class="text-gold" /><span data-wx="sunrise">{today?.sunrise ?? '—'}</span></p></div>
+          <div class="bg-paper px-7 py-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">日の入り</p><p class="mt-1 flex items-center gap-2 font-serif text-lg"><Icon name="sunset" size={18} class="text-gold" /><span data-wx="sunset">{today?.sunset ?? '—'}</span></p></div>
+          <div class="bg-paper px-7 py-5"><p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-ink-soft">{monthLabel}の平年値（平均）</p><p class="mt-1 font-serif text-lg">{monthNormal.normal.temp.toFixed(1)}℃ ／ 最高 {monthNormal.normal.tmax.toFixed(1)}℃</p></div>
+        </div>
+      </div>
+
+      {advice && (
+        <div class="paper-panel mt-5 p-7 md:p-8">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <h3 class="font-serif text-xl font-semibold">{variant === 'compact' ? '今日の万代島の過ごし方' : 'この天気での動き方'}</h3>
+            <p class="text-[0.68rem] text-ink-soft">観測値から組み立てた提案です。当てはまる項目だけを表示します。</p>
+          </div>
+          <div class="mt-6 grid gap-4">
+            <ul class="grid gap-2.5" data-wx-block="risks" hidden={!advice.risks.length} set:html={adviceHtml?.risks ?? ''}></ul>
+            {variant === 'full' ? (
+              <div class="grid gap-4 md:grid-cols-3">
+                <section class="border border-line bg-paper-deep/[.42] p-5">
+                  <p class="eyebrow">この日の服装</p>
+                  <ul class="mt-3.5 space-y-3" data-wx-block="outfit" set:html={adviceHtml?.outfit ?? ''}></ul>
+                </section>
+                <section class="border border-line bg-paper-deep/[.42] p-5">
+                  <p class="eyebrow">遊び方の組み立て</p>
+                  <ul class="mt-3.5 space-y-3" data-wx-block="plan" set:html={adviceHtml?.plan ?? ''}></ul>
+                </section>
+                <section class="border border-line bg-paper-deep/[.42] p-5">
+                  <p class="eyebrow">持ち物</p>
+                  <ul class="mt-3.5 space-y-2.5" data-wx-block="items" set:html={adviceHtml?.items ?? ''}></ul>
+                </section>
+              </div>
+            ) : (
+              <section class="border border-line bg-paper-deep/[.42] p-5">
+                <p class="eyebrow">この日の過ごし方</p>
+                <ul class="mt-3.5 space-y-3" data-wx-block="plan" set:html={adviceHtml?.plan ?? ''}></ul>
+              </section>
+            )}
+          </div>
+        </div>
+      )}
+
+      {hourSlots.length > 0 && (
+        <div class="paper-panel mt-5 p-7 md:p-8">
+          <div class="flex flex-wrap items-end justify-between gap-3">
+            <h3 class="font-serif text-xl font-semibold">時間帯ごとの見通し</h3>
+            <p class="text-[0.68rem] text-ink-soft">降水確率と気温。外出の時間帯を決める目安に。</p>
+          </div>
+          <div class="mt-6 flex gap-3 overflow-x-auto pb-2" data-wx-hours>
+            {hourSlots.map((hour, index) => (
+              <div class="min-w-[76px] shrink-0 border border-line bg-paper-deep/[.35] px-3 py-4 text-center" data-wx-hour={index}>
+                <p class="text-[0.62rem] font-extrabold text-ink-soft" data-f="time">{hour.time}</p>
+                <div class="mx-auto my-3 text-harbor">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use data-wx-use href={`#${sprite}-${weatherIcon(hour.code)}`} /></svg>
+                </div>
+                <p class="font-serif text-base" data-f="temp">{hour.temp.toFixed(0)}℃</p>
+                <p class="mt-1 text-[0.65rem] font-bold text-harbor" data-f="pop">{hour.pop}%</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div class="paper-panel mt-5 p-7 md:p-8">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <h3 class="font-serif text-xl font-semibold">{variant === 'compact' ? '3日間の見通し' : '7日間の見通し'}</h3>
+          <p class="text-[0.68rem] text-ink-soft">最高・最低気温と降水確率。荷物と服装の判断に使います。</p>
+        </div>
+        <div class:list={['mt-6 grid gap-3', variant === 'compact' ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4 lg:grid-cols-7']}>
+          {forecastDays.map((day, index) => (
+            <article class:list={['border p-4 text-center', index === 0 ? 'border-harbor bg-harbor/[.06]' : 'border-line bg-paper-deep/[.3]']} data-wx-day={index}>
+              <p class="text-[0.65rem] font-extrabold tracking-[0.08em] text-ink-soft">
+                {index === 0 ? '今日' : `${day.weekday}曜`}
+                <span class="mt-0.5 block font-normal">{day.date.slice(5).replace('-', '/')}</span>
+              </p>
+              <div class="mx-auto my-3 text-harbor">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use data-wx-use href={`#${sprite}-${weatherIcon(day.code)}`} /></svg>
+              </div>
+              <p class="font-serif text-base leading-6"><span data-f="tmax">{day.tmax.toFixed(0)}</span>°<span class="ml-1 text-ink-soft" data-f="tmin">{day.tmin.toFixed(0)}</span>°</p>
+              <p class="mt-1 text-[0.65rem] font-bold text-harbor"><Icon name="droplet" size={12} class="inline align-[-2px]" /> <span data-f="pop">{day.pop}</span>%</p>
+              <p class="mt-1 text-[0.62rem] text-ink-soft" data-f="label">{weatherLabel(day.code)}</p>
+            </article>
+          ))}
+        </div>
+        <p class="mt-6 text-[0.68rem] leading-6 text-ink-soft">
+          {variant === 'compact' ? (
+            <><a href="/weather/" class="font-bold text-harbor underline decoration-line underline-offset-4">7日間の予報と海況の目安を見る</a> ／ </>
+          ) : null}
+          予報は刻々と変わります。当日の朝に再確認し、荒天時は交通と船の運航情報を優先してください。
+          {stale ? <span class="ml-1">表示中の値は直近の取得結果です。</span> : null}
+        </p>
+      </div>
+    </>
+  )}
+</section>
+
+<script>
+  import type { WeatherData } from '../lib/weather';
+  import {
+    marineRequestUrl,
+    selectHourSlots,
+    toWeatherData,
+    weatherIcon,
+    weatherLabel,
+    weatherRequestUrl,
+    windDirectionLabel,
+  } from '../lib/weather';
+  import { buildWeatherAdvice, renderAdviceHtml, toAdviceFact, uvLabel } from '../lib/weatherAdvice';
+
+  function setText(target: Element | null, value: string) {
+    if (target) target.textContent = value;
+  }
+
+  function pick(scope: Element | null, name: string) {
+    return scope ? scope.querySelector(`[data-f="${name}"]`) : null;
+  }
+
+  function setIcon(scope: Element, sprite: string, code: number) {
+    const use = scope.querySelector('use[data-wx-use]');
+    if (use) use.setAttribute('href', `#${sprite}-${weatherIcon(code)}`);
+  }
+
+  function paint(root: HTMLElement, data: WeatherData) {
+    const sprite = root.dataset.wxSprite ?? '';
+    const today = data.days[0];
+    if (!today) return;
+    const current = data.current;
+
+    setText(root.querySelector('[data-wx="temp"]'), current.temp.toFixed(1));
+    setText(root.querySelector('[data-wx="feels"]'), `${current.feels.toFixed(1)}℃`);
+    setText(root.querySelector('[data-wx="humidity"]'), `${current.humidity}%`);
+    setText(root.querySelector('[data-wx="wind"]'), `${windDirectionLabel(current.windDir)} ${current.wind.toFixed(1)}m/s`);
+    setText(root.querySelector('[data-wx="precip"]'), `${current.precip.toFixed(1)}mm`);
+    setText(root.querySelector('[data-wx="label"]'), weatherLabel(current.code));
+
+    const mainUse = root.querySelector('use[data-wx-use]');
+    if (mainUse) mainUse.setAttribute('href', `#${sprite}-${weatherIcon(current.code)}`);
+
+    setText(root.querySelector('[data-wx="sunrise"]'), today.sunrise);
+    setText(root.querySelector('[data-wx="sunset"]'), today.sunset);
+    setText(root.querySelector('[data-wx="pop"]'), String(today.pop));
+    setText(root.querySelector('[data-wx="uv"]'), uvLabel(today.uvMax) || '弱い');
+    setText(root.querySelector('[data-wx="windmax"]'), today.wind.toFixed(1));
+    setText(root.querySelector('[data-wx="gustmax"]'), today.gust.toFixed(1));
+
+    const seaCell = root.querySelector<HTMLElement>('[data-wx="sea-cell"]');
+    if (seaCell) {
+      seaCell.hidden = !data.sea;
+      if (data.sea) {
+        setText(seaCell.querySelector('[data-wx="wave"]'), data.sea.waveMax === null ? '—' : data.sea.waveMax.toFixed(1));
+        setText(seaCell.querySelector('[data-wx="sst"]'), data.sea.sst === null ? '—' : data.sea.sst.toFixed(0));
+      }
+    }
+
+    // 提案は初期描画と同じ処理で組み立て、表層も同じ HTML に差し替える
+    const advice = buildWeatherAdvice(toAdviceFact(data));
+    setText(root.querySelector('[data-wx="headline"]'), advice.headline);
+    const adviceParts = renderAdviceHtml(advice);
+    const blocks = ['risks', 'outfit', 'plan', 'items'] as const;
+    blocks.forEach((key) => {
+      const box = root.querySelector<HTMLElement>(`[data-wx-block="${key}"]`);
+      if (!box) return;
+      box.innerHTML = adviceParts[key];
+      if (key === 'risks') box.hidden = advice.risks.length === 0;
+    });
+
+    root.querySelectorAll<HTMLElement>('[data-wx-day]').forEach((card) => {
+      const index = Number(card.dataset.wxDay);
+      const day = data.days[index];
+      if (!day) return;
+      setText(pick(card, 'tmax'), day.tmax.toFixed(0));
+      setText(pick(card, 'tmin'), day.tmin.toFixed(0));
+      setText(pick(card, 'pop'), String(day.pop));
+      setText(pick(card, 'label'), weatherLabel(day.code));
+      setIcon(card, sprite, day.code);
+    });
+
+    const slots = Array.from(root.querySelectorAll<HTMLElement>('[data-wx-hour]'));
+    if (slots.length) {
+      const hours = selectHourSlots(data, slots.length);
+      slots.forEach((slot, offset) => {
+        const hour = hours[offset];
+        if (!hour) {
+          slot.hidden = true;
+          return;
+        }
+        slot.hidden = false;
+        setText(pick(slot, 'time'), hour.time);
+        setText(pick(slot, 'temp'), `${hour.temp.toFixed(0)}℃`);
+        setText(pick(slot, 'pop'), `${hour.pop}%`);
+        setIcon(slot, sprite, hour.code);
+      });
+    }
+
+    const [datePart, clockPart] = current.time.split(' ');
+    if (datePart && clockPart) {
+      const dateParts = datePart.split('-');
+      setText(root.querySelector('[data-wx="updated"]'), `${Number(dateParts[1])}月${Number(dateParts[2])}日 ${clockPart.slice(0, 5)} 時点`);
+    }
+  }
+
+  /** 予報と海側のデータをまとめ直し、表示を更新する。失敗時は表示を維持する。 */
+  async function load(root: HTMLElement) {
+    try {
+      const [forecastResponse, marineResponse] = await Promise.all([
+        fetch(weatherRequestUrl(), { headers: { accept: 'application/json' }, cache: 'no-store' }),
+        fetch(marineRequestUrl(), { headers: { accept: 'application/json' }, cache: 'no-store' }),
+      ]);
+      if (!forecastResponse.ok) return;
+      const [forecast, marine] = await Promise.all([
+        forecastResponse.json(),
+        marineResponse.ok ? marineResponse.json() : Promise.resolve(null),
+      ]);
+      const data = toWeatherData(forecast, marine);
+      if (data.days.length) paint(root, data);
+    } catch {
+      // 通信に失敗したときは直前の表示をそのまま残す
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-wx-root]').forEach((root) => {
+    const refresh = (Number(root.dataset.wxRefresh) || 10) * 60 * 1000;
+    window.setTimeout(() => load(root), 1500);
+    window.setInterval(() => load(root), refresh);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') load(root);
+    });
+  });
+</script>

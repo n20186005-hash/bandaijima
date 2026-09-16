@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import SourcesSection from '../components/SourcesSection.astro';
+import Icon from '../components/Icon.astro';
+import { attraction } from '../config/site';
+import { audiencePlans, standardRoutes, planPrinciples } from '../data/plans';
+
+const { fullName, shortName, city, stateProvince } = attraction;
+
+const planSources = [
+  {
+    id: 'hours',
+    label: '営業',
+    title: '営業時間と定休日の考え方',
+    meta: '9:00〜21:00 が目安（店舗により異なる）',
+    note: '営業時間は店舗ごとに異なり、日によって変わります。到着時に各店の表示を確認してください。',
+    href: '/hours/',
+    linkLabel: '営業時間のページ',
+  },
+  {
+    id: 'access',
+    label: '移動',
+    title: '空港・駅・車からの所要時間',
+    meta: '徒歩約15分、バス約10〜15分、IC から約20分',
+    note: '所要時間は目安です。天候と道路状況により変動します。',
+    href: '/access/',
+    linkLabel: 'アクセスの詳細',
+  },
+  {
+    id: 'facilities',
+    label: '設備',
+    title: '休憩・授乳・バリアフリーの確認先',
+    meta: '当日の館内案内が一次情報',
+    note: '座れる場所、授乳室、多目的トイレの位置は当日の案内で確認するのが確実です。',
+    href: '/services/',
+    linkLabel: '施設・サービス',
+  },
+];
+---
+
+<BaseLayout
+  title="タイプ別プラン｜親子・写真・バリアフリーと半日／全日"
+  description={`${stateProvince}${city}・${shortName}の回り方を、親子連れ・写真目的・低体力／バリアフリーの3タイプと、半日・全日の標準ルートで整理しました。持ち物と避けたい行動もあわせて掲載しています。`}
+  ogImageAlt={`${fullName}で提供される海鮮の一例`}
+>
+  <PageHero
+    eyebrow="PLANS BY TRAVELER"
+    title="誰と行くかで、回り方は変わる。"
+    lead="同じ場所でも、子ども連れ、写真目的、歩行に不安がある場合では最適な順番が違います。制約を先に整理し、時間割と持ち物までまとめました。"
+    image="/images/sushi-platter.webp"
+    imageAlt={`${fullName}（${city}）で味わえる海鮮料理の一例`}
+    compact
+  />
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="THREE TYPES"
+        title="タイプ別の回り方"
+        description="どれも同じ港の一日です。無理なく楽しめる形を選んでください。"
+      />
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        {audiencePlans.map((plan) => (
+          <article class="paper-panel flex h-full flex-col p-7">
+            <div class="flex items-center gap-3">
+              <Icon name={plan.icon} size={26} class="text-vermilion" />
+              <p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-ink-soft">{plan.label}</p>
+            </div>
+            <h3 class="mt-4 font-serif text-2xl font-semibold leading-9">{plan.title}</h3>
+            <p class="body-copy mt-4 text-sm">{plan.forWhom}</p>
+
+            <dl class="mt-5 grid gap-3 border-y border-line py-4 text-xs">
+              <div class="flex gap-3"><dt class="w-16 shrink-0 font-extrabold text-ink">所要</dt><dd class="text-ink-soft">{plan.duration}</dd></div>
+              <div class="flex gap-3"><dt class="w-16 shrink-0 font-extrabold text-ink">ペース</dt><dd class="text-ink-soft">{plan.pace}</dd></div>
+            </dl>
+
+            <div class="mt-5">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.14em] text-vermilion">先に押さえる制約</p>
+              <ul class="mt-3 grid gap-2">
+                {plan.constraints.map((item) => (
+                  <li class="flex gap-2 text-xs leading-6 text-ink-soft"><Icon name="check" size={15} class="mt-1 shrink-0 text-harbor" />{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="mt-6">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.14em] text-vermilion">時間割の例</p>
+              <ol class="mt-4 grid gap-4 border-l border-line pl-5">
+                {plan.timeline.map((step) => (
+                  <li class="relative">
+                    <span class="absolute -left-[26px] top-1.5 h-2.5 w-2.5 rounded-full bg-vermilion"></span>
+                    <p class="text-[0.68rem] font-extrabold tracking-[0.1em] text-ink-soft">{step.time}</p>
+                    <p class="mt-1 font-serif text-base font-semibold">{step.title}</p>
+                    <p class="mt-1 text-xs leading-6 text-ink-soft">{step.text}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div class="mt-6 border-t border-line pt-5">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.14em] text-vermilion">持ち物</p>
+              <p class="mt-3 text-xs leading-6 text-ink-soft">{plan.checklist.join('／')}</p>
+              <p class="mt-4 text-xs leading-6 text-ink-soft">
+                <span class="font-extrabold text-ink">避けたいこと：</span>{plan.avoid}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white/[.45] py-16 md:py-24">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="STANDARD ROUTES"
+        title="半日と、一日。"
+        description="はじめての訪問者向けの標準ルートです。滞在時間に合わせて、どちらかを土台に組み替えてください。"
+      />
+      <div class="mt-12 grid gap-6 lg:grid-cols-2">
+        {standardRoutes.map((route) => (
+          <article class="paper-panel p-7 md:p-8">
+            <div class="flex items-baseline justify-between gap-4">
+              <p class="text-[0.62rem] font-extrabold tracking-[0.16em] text-vermilion">{route.label}</p>
+              <p class="text-[0.68rem] font-extrabold tracking-[0.1em] text-ink-soft">{route.duration}</p>
+            </div>
+            <h3 class="mt-4 font-serif text-2xl font-semibold leading-9">{route.title}</h3>
+            <p class="body-copy mt-4 text-sm">{route.summary}</p>
+            <ol class="mt-6 grid gap-5">
+              {route.blocks.map((block) => (
+                <li class="flex gap-4">
+                  <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center border border-line bg-paper-deep/[.45] text-harbor">
+                    <Icon name={block.icon} size={18} />
+                  </span>
+                  <div>
+                    <p class="text-[0.68rem] font-extrabold tracking-[0.1em] text-ink-soft">{block.time}</p>
+                    <p class="mt-1 font-serif text-lg font-semibold">{block.title}</p>
+                    <p class="mt-1 text-xs leading-6 text-ink-soft">{block.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p class="mt-6 border-t border-line pt-4 text-[0.68rem] font-extrabold tracking-[0.08em] text-ink-soft">向く人：{route.goodFor}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+        <a href="/course/" class="button-primary">滞在時間から選ぶコース <Icon name="arrow" size={16} /></a>
+        <a href="/gourmet/" class="button-quiet">食べる場所の選び方 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="PLANNING RULES"
+        title="どのプランでも共通の原則"
+        description="港の一日を崩さないための基本です。"
+      />
+      <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {planPrinciples.map((rule, index) => (
+          <article class="border-t-2 border-vermilion bg-paper p-6">
+            <p class="font-serif text-3xl font-semibold text-line">{String(index + 1).padStart(2, '0')}</p>
+            <h3 class="mt-3 font-serif text-lg font-semibold leading-7">{rule.title}</h3>
+            <p class="mt-3 text-xs leading-6 text-ink-soft">{rule.text}</p>
+          </article>
+        ))}
+      </div>
+      <div class="mt-12 paper-panel flex flex-col gap-5 p-7 md:flex-row md:items-center md:justify-between md:p-8">
+        <div class="flex gap-4">
+          <Icon name="clock" size={24} class="mt-1 shrink-0 text-vermilion" />
+          <div>
+            <h3 class="font-serif text-xl font-semibold">時間が読めない日は、順番を変える</h3>
+            <p class="mt-2 text-xs leading-6 text-ink-soft">行列が長いときは食事を後ろに回し、先に買い物と散策を済ませます。待ち時間は滞在時間から差し引いて考えます。</p>
+          </div>
+        </div>
+        <a href="/weather/" class="button-quiet shrink-0">天気と海況を確認 <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="プラン作成の前提"
+    lead={`当サイトは${fullName}（${shortName}）の非公式ガイドです。所要時間と営業の前提は、公式案内と公的機関の公開情報に基づいて整理しています。`}
+    extra={planSources}
+  />
+</BaseLayout>

@@ -5,9 +5,22 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import SectionTitle from '../components/SectionTitle.astro';
 import AccessDiagram from '../components/AccessDiagram.astro';
 import Icon from '../components/Icon.astro';
-import { siteConfig } from '../config/site';
+import SourcesSection from '../components/SourcesSection.astro';
+import { siteConfig, attraction } from '../config/site';
+import { transportRoutes, transportPrinciples, transportSources } from '../data/transport';
 
-const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3147.3035097658326!2d139.061446!3d37.923339399999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff4ca1fdfbef965%3A0x2d08e3d2cac13c0a!2sMinato%20Marche%20Pier%20Bandai!5e0!3m2!1sja!2sJP!4v1785411169543!5m2!1sja!2sJP';
+const MAP_EMBED_URL = attraction.mapsEmbedUrl;
+
+/** transportSources は label/href のみ持つため、出典カードの形に整える */
+const transportSourceItems = transportSources.map((source, index) => ({
+  id: `transport-${index}`,
+  label: '交通',
+  title: source.label,
+  meta: '公共交通、道路、運賃に関する公開情報',
+  note: '所要時間と運賃は変動するため、いずれも「目安」として掲載し、当日の運行情報を優先するよう案内しています。',
+  href: source.href,
+  linkLabel: '資料を見る',
+}));
 ---
 
 <BaseLayout
@@ -32,8 +45,11 @@ const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d314
           <dl class="mt-7 grid gap-4 border-y border-line py-6 text-sm">
             <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">住所</dt><dd class="text-ink-soft">{siteConfig.address}</dd></div>
             <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">座標</dt><dd class="text-ink-soft">{siteConfig.coordinates.latitude}, {siteConfig.coordinates.longitude}</dd></div>
+            <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">電話</dt><dd class="text-ink-soft">{attraction.telephoneLabel}</dd></div>
+            <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">地図コード</dt><dd class="text-ink-soft">{attraction.plusCode}</dd></div>
             <div class="grid grid-cols-[84px_1fr] gap-4"><dt class="font-extrabold text-ink">目印</dt><dd class="text-ink-soft">万代島・朱鷺メッセ方面</dd></div>
           </dl>
+          <p class="mt-5"><a href={attraction.mapsShareUrl} target="_blank" rel="noopener noreferrer nofollow" class="inline-flex items-center gap-2 text-xs font-extrabold text-harbor underline decoration-line underline-offset-4">Google マップで{attraction.shortName}の場所を開く <Icon name="arrow" size={15} /></a></p>
         </div>
         <AccessDiagram />
       </div>
@@ -74,6 +90,94 @@ const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d314
     </div>
   </section>
 
+  <section class="section-space" id="routes">
+    <div class="site-shell">
+      <SectionTitle
+        eyebrow="ROUTE BY ROUTE"
+        title="出発地別の、詳細ルート。"
+        description="空港、駅、バス、タクシー、車、フェリー、自転車。それぞれの手順と、つまずきやすい点を順番に並べました。所要時間と運賃はいずれも目安です。"
+      />
+
+      <nav aria-label="ルートの目次" class="mt-8 flex flex-wrap gap-2">
+        {transportRoutes.map((route, index) => (
+          <a href={`#route-${route.id}`} class="inline-flex items-center gap-2 border border-line bg-paper px-4 py-2.5 text-[0.7rem] font-extrabold tracking-[0.06em] text-harbor transition-colors hover:border-harbor hover:bg-paper-deep/[.5]">
+            <span class="font-serif text-gold">{String(index + 1).padStart(2, '0')}</span>
+            {route.title}
+          </a>
+        ))}
+      </nav>
+
+      <div class="mt-10 grid gap-6 lg:grid-cols-2">
+        {transportRoutes.map((route, index) => (
+          <article id={`route-${route.id}`} class="paper-panel flex h-full flex-col p-7 md:p-8">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <span class="grid h-12 w-12 shrink-0 place-items-center border border-line bg-paper-deep/[.45] text-harbor">
+                  <Icon name={route.icon} size={24} />
+                </span>
+                <div>
+                  <p class="text-[0.6rem] font-extrabold tracking-[0.14em] text-ink-soft">{String(index + 1).padStart(2, '0')} · {route.from}</p>
+                  <h3 class="mt-1 font-serif text-xl font-semibold leading-7">{route.title}</h3>
+                </div>
+              </div>
+            </div>
+
+            <p class="body-copy mt-5 text-sm">{route.summary}</p>
+
+            <dl class="mt-5 grid gap-3 border-y border-line py-4 text-xs sm:grid-cols-2">
+              <div class="flex gap-3"><dt class="w-14 shrink-0 font-extrabold text-ink">所要</dt><dd class="text-ink-soft">{route.duration}</dd></div>
+              <div class="flex gap-3"><dt class="w-14 shrink-0 font-extrabold text-ink">費用</dt><dd class="text-ink-soft">{route.cost}</dd></div>
+            </dl>
+
+            <ol class="mt-5 grid gap-4">
+              {route.steps.map((step) => (
+                <li class="flex gap-3">
+                  <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-vermilion"></span>
+                  <div>
+                    <p class="text-[0.72rem] font-extrabold text-ink">{step.label}</p>
+                    <p class="mt-1 text-xs leading-6 text-ink-soft">{step.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <ul class="mt-6 grid gap-3 border-t border-line pt-5">
+              {route.notes.map((note) => (
+                <li class="flex gap-2 text-xs leading-6 text-ink-soft"><Icon name="info" size={15} class="mt-1 shrink-0 text-vermilion" />{note}</li>
+              ))}
+            </ul>
+
+            <div class="mt-6 grid gap-2 border-t border-line pt-5 text-[0.7rem] leading-6">
+              <p><span class="font-extrabold text-ink">バリアフリー：</span><span class="text-ink-soft">{route.accessibility}</span></p>
+              <p><span class="font-extrabold text-ink">向く人：</span><span class="text-ink-soft">{route.bestFor}</span></p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="mt-14">
+        <SectionTitle
+          eyebrow="RULES OF THUMB"
+          title="移動で崩れないための、四つの原則。"
+          description="どの手段を選んでも、これだけは共通です。"
+        />
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {transportPrinciples.map((rule, index) => (
+            <article class="border-t-2 border-vermilion bg-paper p-6">
+              <p class="font-serif text-3xl font-semibold text-line">{String(index + 1).padStart(2, '0')}</p>
+              <h3 class="mt-3 font-serif text-lg font-semibold leading-7">{rule.title}</h3>
+              <p class="mt-3 text-xs leading-6 text-ink-soft">{rule.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <p class="mt-8 text-[0.7rem] leading-6 text-ink-soft">
+        所要時間と運賃は公開情報に基づく目安です。ダイヤ改正、運賃改定、工事、積雪、交通規制により変わります。当日の運行案内を優先してください。
+      </p>
+    </div>
+  </section>
+
   <section class="bg-harbor text-white py-16 md:py-24">
     <div class="site-shell grid gap-10 lg:grid-cols-[.86fr_1.14fr] lg:items-center">
       <div>
@@ -102,6 +206,23 @@ const MAP_EMBED_URL = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d314
         <article class="paper-panel p-7"><Icon name="camera" size={30} class="text-vermilion" /><h2 class="mt-5 font-serif text-xl font-semibold">朱鷺メッセ</h2><p class="body-copy mt-4 text-sm">市場のあとに港沿いを歩き、展望へ。天候が良い日は新潟市街や日本海の眺めを楽しめます。</p><a href="/course/#half" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor">半日コース <Icon name="arrow" size={16} /></a></article>
         <article class="paper-panel p-7"><Icon name="train" size={30} class="text-vermilion" /><h2 class="mt-5 font-serif text-xl font-semibold">新潟空港・駅</h2><p class="body-copy mt-4 text-sm">空港からは新潟駅を経由するか、荷物量に応じてタクシーを選択。帰路は渋滞と乗換時間を見込みます。</p><a href="/faq/" class="mt-6 inline-flex items-center gap-2 text-xs font-extrabold text-harbor">移動のFAQ <Icon name="arrow" size={16} /></a></article>
       </div>
+
+      <div class="mt-12 flex flex-col gap-5 border-t border-line pt-8 md:flex-row md:items-center md:justify-between">
+        <p class="max-w-2xl text-xs leading-7 text-ink-soft">
+          バスの運行内容、運賃、交通規制など、変更されやすい情報は
+          <a href={attraction.cityOfficialUrl} target="_blank" rel="noopener noreferrer" class="font-bold text-harbor underline decoration-line underline-offset-4">{attraction.cityOfficialLabel}</a>
+          と
+          <a href={attraction.govtTourismUrl} target="_blank" rel="noopener noreferrer" class="font-bold text-harbor underline decoration-line underline-offset-4">{attraction.govtTourismLabel}</a>
+          で最新の案内をご確認ください。
+        </p>
+        <a href={attraction.mapsShareUrl} target="_blank" rel="noopener noreferrer nofollow" class="button-quiet shrink-0">Google マップで経路を見る <Icon name="arrow" size={16} /></a>
+      </div>
     </div>
   </section>
+
+  <SourcesSection
+    heading="交通情報の出典"
+    lead={`当サイトは${attraction.fullName}（${attraction.shortName}）の非公式ガイドです。所要時間、運賃、運行内容は公的機関と交通事業者の公開情報に基づき、変動する値はすべて「目安」として整理しています。`}
+    extra={transportSourceItems}
+  />
 </BaseLayout>
