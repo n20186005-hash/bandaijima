@@ -8,8 +8,17 @@ import Icon from '../components/Icon.astro';
 import SourcesSection from '../components/SourcesSection.astro';
 import { siteConfig, attraction } from '../config/site';
 import { transportRoutes, transportPrinciples, transportSources } from '../data/transport';
+import { facilityGroups } from '../data/facilities';
 
 const MAP_EMBED_URL = attraction.mapsEmbedUrl;
+
+/**
+ * 駐車場は「ピアBandai 駐車場」系の検索で最も求められる情報。
+ * 記述内容は施設データと同一の情報源を参照し、二重管理と表記ゆれを避ける。
+ */
+const parkingGroup = facilityGroups.find((group) => group.id === 'parking');
+const parkingFacility = parkingGroup?.items.find((item) => item.id === 'parking');
+const winterRoadItem = parkingGroup?.items.find((item) => item.id === 'winter-road');
 
 /** transportSources は label/href のみ持つため、出典カードの形に整える */
 const transportSourceItems = transportSources.map((source, index) => ({
@@ -24,7 +33,7 @@ const transportSourceItems = transportSources.map((source, index) => ({
 ---
 
 <BaseLayout
-  title="アクセス・駐車場"
+  title="アクセス・駐車場｜ピアBandaiへの行き方と車で来る場合の注意"
   description="新潟駅からピアBandaiへの徒歩・バス・車での行き方、万代島周辺の駐車場利用時の確認ポイント、佐渡汽船や空港からの動線を案内します。"
   image="/images/whats-niigata.webp"
 >
@@ -86,6 +95,31 @@ const transportSourceItems = transportSources.map((source, index) => ({
           <div class="flex items-center gap-4 bg-vermilion p-6 text-white"><span class="grid h-12 w-12 place-items-center border border-white/[.35]"><Icon name="car" size={25} /></span><div><p class="text-[0.62rem] font-extrabold tracking-[0.13em] text-white/[.65]">BY CAR</p><h2 class="mt-1 font-serif text-xl font-semibold">週末は早めに</h2></div></div>
           <div class="p-6"><p class="body-copy text-xs">敷地内駐車場が混雑する日は、万代島・朱鷺メッセ周辺の案内に従います。駐車サービスの利用方法は現地で必ず確認してください。</p><ul class="mt-5 grid gap-3 text-xs leading-6 text-ink-soft"><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />入庫時に駐車場名と区画を確認</li><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />サービス用QRやレシートを保管</li><li class="flex gap-2"><Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />出庫前に館内の事前精算案内を確認</li></ul></div>
         </article>
+      </div>
+
+      <div class="mt-16" id="parking">
+        <SectionTitle
+          eyebrow="PARKING"
+          title="車で来る場合の、駐車場。"
+          description={parkingFacility?.summary ?? '敷地内に駐車場があります。無料時間や精算方法は変動するため、入庫時の表示を優先して確認してください。'}
+        />
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {(parkingFacility?.points ?? []).map((point) => (
+            <article class="border-t-2 border-vermilion bg-paper p-6">
+              <div class="flex gap-3">
+                <Icon name="check" size={16} class="mt-1 shrink-0 text-vermilion" />
+                <p class="text-xs leading-6 text-ink-soft">{point}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p class="notice-box mt-6 text-xs leading-6 text-ink-soft">
+          {winterRoadItem?.summary}台数・料金・無料時間と優待の条件は時期や催事で変わります。最新の条件は現地の表示と<a href={attraction.officialSiteUrl} class="font-bold text-harbor underline decoration-line underline-offset-4" target="_blank" rel="noopener noreferrer">公式サイト</a>で確認してください。
+        </p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+          <a href="/services/" class="button-primary">設備・サービスの詳細 <Icon name="arrow" size={16} /></a>
+          <a href="/course/" class="button-quiet">滞在時間からコースを選ぶ <Icon name="arrow" size={16} /></a>
+        </div>
       </div>
     </div>
   </section>

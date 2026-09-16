@@ -54,9 +54,53 @@ const tripGuides = [
     href: '/heritage/',
   },
 ];
+
+/**
+ * ホーム（単一実体）のよくある質問。
+ * 検索ボリュームの高い商業インテント（駐車場・海鮮丼・営業時間・入場料・アクセス）に答え、
+ * FAQPage 構造化データで AI 概覧・検索結果の拡充を狙う。/faq/ の汎用質問とは重複しないよう、実体・商業に寄せた。
+ * 評価・クチコミ数は JSON-LD に含めず、画面表示（GoogleRating / SourcesSection）のみとする方針を維持。
+ */
+const homeFaqs = [
+  {
+    question: 'ピアBandai の駐車場は無料ですか？',
+    answer: '敷地内に駐車場があり、最初の一定時間が無料で、買い物金額に応じた優待が適用される方式が案内されています。大型車にも対応し、週末や催事日は満車になりやすいため、到着は早めがおすすめです。料金や無料時間、精算方法は入庫時の表示で確認してください。詳しくは「アクセス・駐車場」のページをご覧ください。',
+  },
+  {
+    question: 'ピアBandai で海鮮丼はどこで食べられますか？',
+    answer: '市場内の飲食店で寿司、海鮮丼、ラーメン、焼き物などが楽しめます。鮮魚の種類は朝の方が豊富で、昼どきは待ち時間が長くなりやすいため、丼やラーメンなど代案を決めておくと動きやすくなります。店舗ごとのメニューは「食べる」のページで確認できます。',
+  },
+  {
+    question: 'ピアBandai の営業時間は店舗ごとに違いますか？',
+    answer: '施設全体では朝から夜の時間帯が案内されていますが、鮮魚店、飲食店、カフェで営業時間と定休日が異なります。ラストオーダー、季節営業、臨時休業、売り切れによる早仕舞いに注意してください。最新情報は公式サイトと当日の店頭表示を優先してください。',
+  },
+  {
+    question: 'ピアBandai の入場料はかかりますか？',
+    answer: '市場と広場は入場無料でご利用いただけます。飲食や買い物は別途料金がかかります。',
+  },
+  {
+    question: '新潟駅からピアBandai への行き方は？',
+    answer: 'JR新潟駅の万代口から徒歩でおおむね15〜20分です。雨や雪、荷物の量に合わせて路線バスやタクシーを選ぶのも安心です。車で訪れる場合は敷地内駐車場をご利用いただけます。',
+  },
+  {
+    question: '「ピアBandai」と「みなとのマルシェ」は同じ場所ですか？',
+    answer: '同じ場所です。「みなとのマルシェ ピアBandai」が正式名称で、「ピアBandai（ピア万代）」は親しまれている通称です。新潟市中央区・万代島の市場で、海鮮、寿司、新潟米、地酒、農産物が同じ敷地に集まります。',
+  },
+];
+
+const homeFaqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: homeFaqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
 ---
 
 <BaseLayout
+  title={`${shortName}｜${city}・万代島のみなとのマルシェ`}
   description={`${fullName}（${shortName}）は、${stateProvince}${city}・万代島にある港の市場です。場所と行き方、周辺の${nearbyLandmark1}や${nearbyLandmark2}、食事と買い物の選び方、旅行のヒントをまとめました。`}
   ogImageAlt={`${fullName}（${city}・${stateProvince}）の市場エリア`}
 >
@@ -328,6 +372,32 @@ const tripGuides = [
       <a href="/hours/" class="button-quiet shrink-0">確認ポイントを見る <Icon name="arrow" size={16} /></a>
     </div>
   </section>
+
+  <!-- 単一実体のよくある質問：駐車場・海鮮丼・営業時間・入場料・アクセスなどの商業インテントに答え、FAQPage 構造化データで AI 概覧・検索結果の拡充を狙う -->
+  <section class="section-space" id="faq">
+    <div class="site-shell-narrow">
+      <SectionTitle eyebrow="QUICK QUESTIONS" title="ピアBandai、よくある質問。" description="駐車場、海鮮丼、営業時間、入場料、アクセス。訪問前に確認したいことをまとめました。現地の運営・表示を優先してください。" />
+      <div class="mt-12 divide-y divide-line border-y border-line">
+        {homeFaqs.map((item, index) => (
+          <details class="group py-1">
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-5 py-6 [&::-webkit-details-marker]:hidden">
+              <div class="flex gap-4">
+                <span class="font-serif text-lg text-gold">{String(index + 1).padStart(2, '0')}</span>
+                <div>
+                  <p class="text-[0.62rem] font-extrabold tracking-[0.12em] text-vermilion">ピアBandai</p>
+                  <h2 class="mt-2 font-serif text-lg font-semibold leading-8 md:text-xl">{item.question}</h2>
+                </div>
+              </div>
+              <span class="relative mt-2 h-5 w-5 shrink-0 before:absolute before:left-0 before:top-1/2 before:h-px before:w-5 before:bg-harbor after:absolute after:left-1/2 after:top-0 after:h-5 after:w-px after:bg-harbor after:transition-transform group-open:after:rotate-90"></span>
+            </summary>
+            <div class="pb-7 pl-10 pr-8 md:pl-12"><p class="body-copy text-sm">{item.answer}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(homeFaqSchema)} />
 
   <SourcesSection />
 </BaseLayout>
