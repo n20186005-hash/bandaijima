@@ -122,19 +122,26 @@ const adviceHtml = advice ? renderAdviceHtml(advice) : null;
           <div class="mt-6 grid gap-4">
             <ul class="grid gap-2.5" data-wx-block="risks" hidden={!advice.risks.length} set:html={adviceHtml?.risks ?? ''}></ul>
             {variant === 'full' ? (
-              <div class="grid gap-4 md:grid-cols-3">
-                <section class="border border-line bg-paper-deep/[.42] p-5">
-                  <p class="eyebrow">この日の服装</p>
-                  <ul class="mt-3.5 space-y-3" data-wx-block="outfit" set:html={adviceHtml?.outfit ?? ''}></ul>
-                </section>
-                <section class="border border-line bg-paper-deep/[.42] p-5">
-                  <p class="eyebrow">遊び方の組み立て</p>
-                  <ul class="mt-3.5 space-y-3" data-wx-block="plan" set:html={adviceHtml?.plan ?? ''}></ul>
-                </section>
-                <section class="border border-line bg-paper-deep/[.42] p-5">
-                  <p class="eyebrow">持ち物</p>
-                  <ul class="mt-3.5 space-y-2.5" data-wx-block="items" set:html={adviceHtml?.items ?? ''}></ul>
-                </section>
+              <div class="mt-5">
+                <div class="flex flex-wrap gap-2" role="tablist" aria-label="天気に合わせた提案">
+                  <button type="button" class="wx-tab rounded-full border border-harbor bg-harbor px-4 py-1.5 text-[0.72rem] font-extrabold tracking-[0.04em] text-white" data-wx-tab="outfit" aria-selected="true" aria-controls="wx-panel-outfit">服装</button>
+                  <button type="button" class="wx-tab rounded-full border border-line bg-paper-deep px-4 py-1.5 text-[0.72rem] font-extrabold tracking-[0.04em] text-ink-soft" data-wx-tab="plan" aria-selected="false" aria-controls="wx-panel-plan">遊び方</button>
+                  <button type="button" class="wx-tab rounded-full border border-line bg-paper-deep px-4 py-1.5 text-[0.72rem] font-extrabold tracking-[0.04em] text-ink-soft" data-wx-tab="items" aria-selected="false" aria-controls="wx-panel-items">持ち物</button>
+                </div>
+                <div class="mt-4">
+                  <section id="wx-panel-outfit" data-wx-panel="outfit" class="border border-line bg-paper-deep/[.42] p-5">
+                    <p class="eyebrow">この日の服装</p>
+                    <ul class="mt-3.5 space-y-3" data-wx-block="outfit" set:html={adviceHtml?.outfit ?? ''}></ul>
+                  </section>
+                  <section id="wx-panel-plan" data-wx-panel="plan" class="border border-line bg-paper-deep/[.42] p-5" hidden>
+                    <p class="eyebrow">遊び方の組み立て</p>
+                    <ul class="mt-3.5 space-y-3" data-wx-block="plan" set:html={adviceHtml?.plan ?? ''}></ul>
+                  </section>
+                  <section id="wx-panel-items" data-wx-panel="items" class="border border-line bg-paper-deep/[.42] p-5" hidden>
+                    <p class="eyebrow">持ち物</p>
+                    <ul class="mt-3.5 space-y-2.5" data-wx-block="items" set:html={adviceHtml?.items ?? ''}></ul>
+                  </section>
+                </div>
               </div>
             ) : (
               <section class="border border-line bg-paper-deep/[.42] p-5">
@@ -331,5 +338,28 @@ const adviceHtml = advice ? renderAdviceHtml(advice) : null;
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') load(root);
     });
+
+    // 提案を「服装／遊び方／持ち物」のタブで切り替え（风险提醒はタブ外で常時表示）
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-wx-tab]'));
+    if (tabs.length) {
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.wxTab;
+          tabs.forEach((t) => {
+            const active = t === tab;
+            t.setAttribute('aria-selected', active ? 'true' : 'false');
+            t.classList.toggle('bg-harbor', active);
+            t.classList.toggle('text-white', active);
+            t.classList.toggle('border-harbor', active);
+            t.classList.toggle('bg-paper-deep', !active);
+            t.classList.toggle('text-ink-soft', !active);
+            t.classList.toggle('border-line', !active);
+          });
+          root.querySelectorAll<HTMLElement>('[data-wx-panel]').forEach((panel) => {
+            panel.hidden = panel.dataset.wxPanel !== target;
+          });
+        });
+      });
+    }
   });
 </script>

@@ -34,7 +34,7 @@ const resolvedOgImageAlt = ogImageAlt ?? `${attraction.fullName}（${attraction.
  */
 const defaultSchema = {
   '@context': 'https://schema.org',
-  '@type': 'TouristAttraction',
+  '@type': ['TouristAttraction', 'LocalBusiness'],
   '@id': attractionId,
   name: attraction.fullName,
   alternateName: [...attraction.alternateNames],
@@ -65,6 +65,9 @@ const defaultSchema = {
     ...attraction.alternateNames,
     `${attraction.city} 市場`,
     '新潟 海鮮',
+    '海鮮丼',
+    '食べ歩き',
+    '駐車場',
   ].join(', '),
 };
 const jsonLd = schema ?? defaultSchema;
@@ -100,7 +103,7 @@ const jsonLd = schema ?? defaultSchema;
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:alt" content={resolvedOgImageAlt} />
-    <meta property="og:site_name" content={siteConfig.shortName} />
+    <meta property="og:site_name" content={siteConfig.name} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />

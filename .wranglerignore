@@ -1,0 +1,32 @@
+# Cloudflare Workers へアップロードするのはビルド成果物の dist/ のみ。
+# ソース・開発ツール・ドキュメントはデプロイバンドルに含めない。
+
+# 依存関係とビルドキャッシュ
+node_modules
+.astro
+.wrangler
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+*.log
+
+# バージョン管理・プロジェクト文書
+.git
+.gitignore
+README.md
+LICENSE
+CONTENT_NOTES.md
+CREDITS.md
+VALIDATION.md
+doc.md
+
+# ソースとツール
+src
+public
+scripts
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package.json
+tsconfig.json
+astro.config.mjs

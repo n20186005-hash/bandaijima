@@ -13,7 +13,13 @@ export const attraction = {
   /** 通用俗称、域名对应含义 */
   shortName: 'ピアBandai',
   /** 别名集合，用于 alternateName 与正文等价声明 */
-  alternateNames: ['ピアBandai', 'ピア万代', 'みなとのマルシェピアBandai', 'Minato Marche Pier Bandai'],
+  alternateNames: [
+    'ピアBandai',
+    'ピア万代',
+    'みなとのマルシェピアBandai',
+    'Minato Marche Pier Bandai',
+    '新潟市 みなとのマルシェ ピアBandai',
+  ],
   /** Google 地図のカテゴリ */
   category: 'Market',
   categoryLabel: '市場・食の複合施設',
@@ -69,7 +75,7 @@ export const attraction = {
    */
   rating: {
     value: 4.0,
-    count: 7045,
+    count: 7059,
     sourceLabel: 'Google マップ（Google Maps）',
     sourceName: 'Google マップ',
     syncedAt: '2026年9月',
@@ -78,7 +84,8 @@ export const attraction = {
 } as const;
 
 export const siteConfig = {
-  name: 'みなと日和｜ピアBandai旅の手帖',
+  /** SEO 名称フォーマット: 景点名称＋都市＋旅行ガイド（Attraction + City + Travel Guide） */
+  name: 'みなとのマルシェ ピアBandai（新潟）旅行ガイド',
   shortName: 'みなと日和',
   description:
     '新潟・万代島の「みなとのマルシェ ピアBandai」を楽しむための非公式ガイド。海鮮、寿司、ランチ、買い物、営業時間、駐車場、アクセス、周辺散歩を日本語で案内します。',

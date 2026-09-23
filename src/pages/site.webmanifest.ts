@@ -4,7 +4,7 @@ export const prerender = true;
 
 export const GET: APIRoute = () => {
   const manifest = {
-    name: 'みなと日和｜ピアBandai旅の手帖',
+    name: 'みなとのマルシェ ピアBandai（新潟）旅行ガイド',
     short_name: 'みなと日和',
     description: '新潟・万代島の食と港を楽しむ非公式旅行ガイド',
     lang: 'ja',

@@ -255,6 +255,8 @@ function buildPlan(f: AdviceFact): WeatherTip[] {
     tips.push({ id: 'plan-ship', title: '船・フェリーは運航確認を先に', text: '波または風が強く、遊覧船・フェリーは揺れや欠航が出やすい条件です。乗船予定があれば出発前に運航情報を確認してください。' });
   } else if (calmSea && !FOG.has(f.code)) {
     tips.push({ id: 'plan-quay', title: '岸壁の散策・海の眺めに向く日', text: '風と波が穏やかな条件です。河口から岸壁を歩くならこの日が狙い目です。' });
+  } else if (beaufort(f.windMax) >= 5) {
+    tips.push({ id: 'plan-wind-seaside', title: '海風が強い日は屋内を軸に', text: '市場や飲食スペースを中心に回し、岸壁の散策は風を避けられる時間帯に短く収めると快適です。' });
   }
 
   // この施設固有の条件（雪・寒さ）を、一般的な降水確率の目安より優先する
